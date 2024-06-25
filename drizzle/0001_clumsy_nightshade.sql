@@ -1,0 +1,1 @@
+ALTER TABLE "picklejar_match" ADD COLUMN "verified" boolean DEFAULT false NOT NULL;

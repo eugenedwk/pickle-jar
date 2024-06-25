@@ -1,0 +1,41 @@
+{
+  "version": "6",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1719796398246,
+      "tag": "0000_short_nighthawk",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1719979582132,
+      "tag": "0001_clumsy_nightshade",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1720100636720,
+      "tag": "0002_parallel_corsair",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1720154093506,
+      "tag": "0003_busy_epoch",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1720200324533,
+      "tag": "0004_redundant_hardball",
+      "breakpoints": true
+    }
+  ]
+}
