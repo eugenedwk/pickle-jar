@@ -4,7 +4,7 @@ import { db } from "~/server/db";
 import { matches } from "~/server/db/schema";
 import { sql } from "drizzle-orm";
 import type Error from "next/error";
-import { type ApiServiceErr } from "./utils";
+import { type GenericFormSelectType } from "~/components/AutoComplete";
 
 interface Score {
   round: number;
@@ -23,7 +23,7 @@ export type MatchRes = {
   gameType: string;
   date: Date;
   time: string;
-  location: string;
+  location: GenericFormSelectType;
   outcome: string;
   scores: Score[];
   participants: Participant[];
@@ -61,8 +61,11 @@ export async function fetchMatchListById(
       id: Number(match.id),
       gameType: match.gameType,
       date: new Date(match.date),
-      time: match.time,
-      location: match.location,
+      time: match.time ?? "",
+      location:
+        typeof match.location === "string"
+          ? JSON.parse(match.location)
+          : match.location,
       outcome: match.outcome,
       scores: match.scores as Score[],
       participants: match.participants as Participant[],

@@ -36,7 +36,7 @@ export const VerifyMatchPrompt: React.FC<VerifyMatchPromptProps> = ({
             <strong>Date:</strong> {new Date(match.date).toLocaleDateString()}
           </p>
           <p>
-            <strong>Location:</strong> {match.location}
+            <strong>Location:</strong> {match.location.name}
           </p>
           <p>
             <strong>Participants:</strong>

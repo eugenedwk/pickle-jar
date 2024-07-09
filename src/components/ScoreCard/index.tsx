@@ -78,7 +78,7 @@ export const ScoreboardComponent = ({
             opponent2.name === loggedInUser ? (
             <Button
               onClick={handleVerifyClick}
-              className="mt-1 rounded-full bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600"
+              className="mt-1 rounded-md bg-blue-500 text-xs text-white hover:bg-blue-600"
             >
               Verify Match
             </Button>
@@ -89,7 +89,9 @@ export const ScoreboardComponent = ({
           )}
         </div>
         <div className="flex flex-col items-end">
-          <span className="text-right text-sm text-gray-600">{location}</span>
+          <span className="text-right text-sm text-gray-600">
+            {location.name}
+          </span>
           <span className="text-right text-sm text-gray-600">
             {new Date(date).toLocaleDateString("en-US", {
               year: "numeric",

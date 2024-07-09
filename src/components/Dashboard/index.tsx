@@ -47,18 +47,22 @@ const Dashboard: React.FC = () => {
   const realNamePLZ = playerProfileData?.playerData?.realName ?? "";
   return (
     <div>
-      <div className="w-full">
+      <div className="w-full md:m-8">
         {showOnboarding ? (
           <OnboardingForm onComplete={handleOnboardingComplete} />
         ) : (
           <PlayerCard {...playerProfileData.playerData} />
         )}
+        <div className="w-full bg-white"></div>
       </div>
       <div className="my-8 flex w-full flex-col md:flex-row">
-        <div className="w-full md:m-8">
+        <div className="mb-8 w-full md:m-8">
           <PickleballMatchForm />
         </div>
-        <div className="my-4 w-full md:m-8 md:w-1/2">
+        <div className="mb-4 w-full md:m-8 md:w-1/2">
+          <h2 className="text-left text-4xl font-bold text-white">
+            Recent Matches{" "}
+          </h2>
           {matchList?.map((match: MatchRes, index: number) => (
             <ScoreboardComponent
               key={index}

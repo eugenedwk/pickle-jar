@@ -7,18 +7,32 @@ import PlayerCard from "~/components/PlayerCard";
 import { ScoreboardComponent } from "~/components/ScoreCard";
 import { type MatchRes } from "~/lib/useFetchMatchList";
 import { type PlayerProfile } from "~/lib/usePlayerProfileCheck";
+import { useSession } from "next-auth/react";
 
 type PlayerPageType = {
   playerProfile: PlayerProfile;
   matches: MatchRes[];
 };
 
-export default function PlayerPage({
-  params,
-}: {
-  params: { playerId: string };
-}) {
-  const { playerId } = params;
+export default function PlayerPage({}) {
+  const [playerId, setPlayerId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPlayerProfile = async () => {
+      try {
+        const response = await axios.get<PlayerProfile>("/api/players/check");
+        if (response.data.hasProfile && response.data.playerData) {
+          setPlayerId(response.data.playerData.id);
+        }
+      } catch (error) {
+        console.error("Error fetching player profile:", error);
+        setError("Failed to load player profile. Please try again later.");
+      }
+    };
+
+    void fetchPlayerProfile();
+  }, []);
+
   const [matches, setMatches] = useState<MatchRes[]>([]);
   const [playerProfile, setPlayerProfile] = useState<PlayerProfile>();
   const [playerStats, setPlayerStats] = useState<{
@@ -72,7 +86,7 @@ export default function PlayerPage({
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-green-900 text-white">
       <NavBar />
-      <div className="mx-4 md:mx-16">
+      <div className="mx-4 my-20 md:mx-16">
         <PlayerCard
           {...playerProfile}
           wins={playerStats?.wins}

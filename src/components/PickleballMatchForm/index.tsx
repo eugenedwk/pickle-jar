@@ -7,7 +7,8 @@ import {
   type GenericFormSelectType,
 } from "~/components/AutoComplete";
 import { useToast } from "~/components/ui/use-toast";
-import { LocationForm, type LocationFormData } from "../LocationForm";
+import { LocationForm } from "../LocationForm";
+import { Button } from "../ui/button";
 
 // type FormData = z.infer<typeof MatchSchema>;
 
@@ -308,7 +309,7 @@ export const PickleballMatchForm: React.FC = () => {
           Only one entry required per match.
         </h3>
       </div>
-      <div className="mb-4 w-full rounded-lg border border-green-800 p-4 ">
+      <div className="mb-4 w-full rounded-lg md:border md:border-green-800 md:p-4">
         <h2 className="mb-4 text-left text-2xl font-bold text-green-800">
           Players
         </h2>
@@ -428,28 +429,34 @@ export const PickleballMatchForm: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="mb-4 w-full rounded-lg border border-green-800 p-4 ">
+      <div className="mb-4 w-full rounded-lg md:border md:border-green-800 md:p-4">
         <h2 className="mb-4 text-left text-2xl font-bold text-green-800">
-          Score
+          Score Card
         </h2>
         <div className="mb-6 grid grid-cols-12 gap-4">
           <div
             id="scoreboard-player-names"
-            className="col-span-6 grid grid-rows-3 items-center gap-2 "
+            className="col-span-3 grid grid-rows-3 items-center gap-2 md:col-span-4 "
           >
             <div className="row-span-1 text-right font-bold">Players</div>
             <div className="row-span-1 text-right font-bold">
-              {formData.participants.home1.playerName || "Home Player 1"} /
-              {formData.participants.home2.playerName || " Home Player 2"}
+              <span className="hidden md:inline">
+                {formData.participants.home1.playerName} /
+                {formData.participants.home2.playerName}
+              </span>
+              <span className="md:hidden">Home</span>
             </div>
             <div className="row-span-1 text-right font-bold">
-              {formData.participants.away1.playerName || "Away Player 1"} /
-              {formData.participants.away2.playerName || " Away Player 2"}
+              <span className="hidden md:inline">
+                {formData.participants.away1.playerName} /
+                {formData.participants.away2.playerName}
+              </span>
+              <span className="md:hidden">Away</span>
             </div>
           </div>
           {formData.scores.map((score, index) => (
             <div key={score.round} className="col-span-2">
-              <div className="grid grid-rows-3 items-center gap-2">
+              <div className="grid grid-rows-3 items-center md:gap-2">
                 <label className="row-span-1 font-bold">
                   Round {score.round}
                 </label>
@@ -463,7 +470,7 @@ export const PickleballMatchForm: React.FC = () => {
                     type="number"
                     min="0"
                     defaultValue={0}
-                    className="w-full rounded-md border px-3 py-2"
+                    className="w-8 rounded-md border md:w-full md:px-2 md:py-2"
                     onChange={(e) =>
                       handleScoreChange(
                         score.round,
@@ -488,7 +495,7 @@ export const PickleballMatchForm: React.FC = () => {
                     type="number"
                     min="0"
                     defaultValue={0}
-                    className="w-full rounded-md border px-3 py-2"
+                    className="w-8 rounded-md  border md:w-full md:px-2 md:py-2"
                     onChange={(e) =>
                       handleScoreChange(
                         score.round,
@@ -506,94 +513,131 @@ export const PickleballMatchForm: React.FC = () => {
               </div>
             </div>
           ))}
+          <div className="col-span-2">
+            <div className="grid h-full grid-rows-3 items-center gap-2">
+              <label className="font-bold">Winner?</label>
+              <div>
+                <input
+                  {...register("outcome", {
+                    required: "Outcome is required",
+                    valueAsNumber: true,
+                  })}
+                  type="radio"
+                  value="Home"
+                  className="form-radio row-span-1"
+                  onChange={handleInputChange}
+                />
+                <span className="ml-2">Home</span>
+              </div>
+              <div>
+                <input
+                  {...register("outcome", {
+                    required: "Outcome is required",
+                    valueAsNumber: true,
+                  })}
+                  type="radio"
+                  value="Away"
+                  className="form-radio row-span-1"
+                  onChange={handleInputChange}
+                />
+                <span className="ml-2">Away</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div className="mb-4 w-full rounded-lg border border-green-800 p-4 ">
+      <div className="mb-4 w-full rounded-lg md:border md:border-green-800 md:p-4">
         <h2 className="mb-4 text-left text-2xl font-bold text-green-800">
           Match Info
         </h2>
-        <div className="mb-4">
-          <label className="mb-2 block font-medium">Game Type</label>
-          <div className="flex space-x-4">
-            <label className="flex items-center">
-              <input
-                {...register("gameType", {
-                  required: "Game type is required",
-                })}
-                type="radio"
-                value="Casual"
-                className="mr-2"
-              />
-              Casual
-            </label>
-            <label className="flex items-center">
-              <input
-                {...register("gameType", {
-                  required: "Game type is required",
-                })}
-                type="radio"
-                value="Ranked"
-                className="mr-2"
-              />
-              Ranked
-            </label>
-          </div>
-          {errors.gameType && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.gameType.message}
-            </p>
-          )}
-        </div>
-        <div className="mb-4">
-          <label htmlFor="location" className="mb-2 block font-medium">
-            Location
-          </label>
-          <AutocompleteInput
-            options={locations}
-            onSelect={handleLocationSelect}
-            placeholder="Enter location"
-            value={locationInput}
-            onChange={handleLocationChange}
-          />
-          {errors.location?.name && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.location.name.message}
-            </p>
-          )}
-          <div className="mt-2 text-xs">
-            <button
-              type="button"
-              className="text-blue-600 hover:underline focus:outline-none"
-              onClick={() => setIsLocationFormOpen(true)}
-            >
-              Don&apos;t see your location? Add a new one
-            </button>
-          </div>
-          {isLocationFormOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-              <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-                <h3 className="mb-4 text-lg font-semibold">Add New Location</h3>
-                <LocationForm
-                  onSubmit={async (newLocation: GenericFormSelectType) => {
-                    // Add the new location to the locations list
-                    setLocations([...locations, newLocation]);
-                    // Select the new location
-                    setValue("location", newLocation);
-                    // Close the popover
-                    setIsLocationFormOpen(false);
-                  }}
-                  onCancel={() => setIsLocationFormOpen(false)}
-                />
+        <div className="mb-4 flex flex-col justify-between gap-4 md:flex-row">
+          <div>
+            <label className="mb-2 block font-medium">Game Type</label>
+            <div className="flex flex-col">
+              <div>
+                <label className="flex items-center">
+                  <input
+                    {...register("gameType", {
+                      required: "Game type is required",
+                    })}
+                    type="radio"
+                    value="Casual"
+                    className="mr-2"
+                  />
+                  Casual
+                </label>
+              </div>
+              <div>
+                <label className="flex items-center">
+                  <input
+                    {...register("gameType", {
+                      required: "Game type is required",
+                    })}
+                    type="radio"
+                    value="Ranked"
+                    className="mr-2"
+                  />
+                  Ranked
+                </label>
               </div>
             </div>
-          )}
-          {errors.location && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.location.message}
-            </p>
-          )}
-        </div>
-        <div className="mb-4 flex flex-row gap-4">
+            {errors.gameType && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.gameType.message}
+              </p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="location" className="mb-2 block font-medium">
+              Location
+            </label>
+            <AutocompleteInput
+              options={locations}
+              onSelect={handleLocationSelect}
+              placeholder="Enter location"
+              value={locationInput}
+              onChange={handleLocationChange}
+            />
+            {errors.location?.name && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.location.name.message}
+              </p>
+            )}
+            <div className="mt-2 text-xs">
+              <button
+                type="button"
+                className="text-blue-600 hover:underline focus:outline-none"
+                onClick={() => setIsLocationFormOpen(true)}
+              >
+                Don&apos;t see your location? Add a new one
+              </button>
+            </div>
+            {isLocationFormOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+                  <h3 className="mb-4 text-lg font-semibold">
+                    Add New Location
+                  </h3>
+                  <LocationForm
+                    onSubmit={async (newLocation: GenericFormSelectType) => {
+                      // Add the new location to the locations list
+                      setLocations([...locations, newLocation]);
+                      // Select the new location
+                      setValue("location", newLocation);
+                      // Close the popover
+                      setIsLocationFormOpen(false);
+                    }}
+                    onCancel={() => setIsLocationFormOpen(false)}
+                  />
+                </div>
+              </div>
+            )}
+            {errors.location && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.location.message}
+              </p>
+            )}
+          </div>
           <div>
             <label htmlFor="date" className="mb-2 block font-medium">
               Date
@@ -610,9 +654,9 @@ export const PickleballMatchForm: React.FC = () => {
               <p className="mt-1 text-sm text-red-500">{errors.date.message}</p>
             )}
           </div>
-          <div>
+          {/* <div>
             <label htmlFor="time" className="mb-2 block font-medium">
-              Time
+            Time
             </label>
             <input
               {...register("time", { required: "Time is required" })}
@@ -624,51 +668,19 @@ export const PickleballMatchForm: React.FC = () => {
             {errors.time && (
               <p className="mt-1 text-sm text-red-500">{errors.time.message}</p>
             )}
-          </div>
+          </div> */}
         </div>
-        <div className="mb-4 flex flex-col gap-4">
-          <div>
-            <label className="mb-2 block font-medium">Which team won?</label>
-            <div className="flex space-x-4">
-              <label className="inline-flex items-center">
-                <input
-                  {...register("outcome", {
-                    required: "Outcome is required",
-                    valueAsNumber: true,
-                  })}
-                  type="radio"
-                  value="Home"
-                  className="form-radio"
-                  onChange={handleInputChange}
-                />
-                <span className="ml-2">Home</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  {...register("outcome", {
-                    required: "Outcome is required",
-                    valueAsNumber: true,
-                  })}
-                  type="radio"
-                  value="Away"
-                  className="form-radio"
-                  onChange={handleInputChange}
-                />
-                <span className="ml-2">Away</span>
-              </label>
-            </div>
-          </div>
-        </div>
+        <div className="mb-4 flex flex-col gap-4"></div>
         {errors.outcome && (
           <p className="mt-1 text-sm text-red-500">{errors.outcome.message}</p>
         )}
       </div>
-      <button
+      <Button
         type="submit"
-        className="w-full rounded-md bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600 md:col-span-2"
+        className="w-full rounded-md bg-green-800 px-4 py-2 text-white transition-colors hover:bg-green-600 md:col-span-2"
       >
         Submit Match Details
-      </button>
+      </Button>
     </form>
   );
 };

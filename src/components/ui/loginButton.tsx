@@ -7,8 +7,7 @@ export default function LoginButton() {
   const { data: session } = useSession();
   if (session && session.user) {
     return (
-      <div className="flex items-center space-x-4">
-        <p className="text-sm">Signed in as {session.user.email}</p>
+      <div className="flex items-center justify-end space-x-4">
         <Button
           className="bg-pickle-blue rounded px-4 py-2 text-white"
           onClick={() => signOut()}

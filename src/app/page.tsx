@@ -1,6 +1,5 @@
-import LoginButton from "~/components/ui/loginButton";
-
 import Dashboard from "~/components/Dashboard";
+import NavBar from "~/components/NavBar";
 // import dynamic from "next/dynamic";
 
 // const DynamicDashboard = dynamic(() => import("~/components/Dashboard"), {
@@ -8,9 +7,11 @@ import Dashboard from "~/components/Dashboard";
 // });
 export default function HomePage() {
   return (
-    <main className="bg-gradient flex min-h-screen flex-col items-center justify-center bg-green-900 text-white">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-green-900 text-white">
+      <NavBar />
+
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <div className="hero-banner w-full bg-green-900 px-4 py-12 text-center">
+        <div className="hero-banner mb-24 w-full bg-green-900 px-4 py-12 text-center md:mb-80 ">
           <img
             src="/PicklebackPro.png"
             alt="PICKLEBACK Pro Logo"
@@ -20,10 +21,9 @@ export default function HomePage() {
             <div className="text-green-200">PICKLEBACK Pro</div>
           </h1>
           <div className="text-base font-extrabold tracking-tight text-green-200">
-            BETA - Last updated 10:06pm
+            BETA - Last updated ...idk man
           </div>
         </div>
-        <LoginButton />
         <Dashboard />
         {/* <DynamicDashboard /> */}
       </div>

@@ -13,7 +13,10 @@ const MatchSchema = z.object({
   gameType: z.string(),
   date: z.string().transform((str) => new Date(str)),
   time: z.string(),
-  location: z.string(),
+  location: z.object({
+    id: z.string(),
+    name: z.string(),
+  }),
   outcome: z.string(),
   scores: z.array(
     z.object({
@@ -36,6 +39,7 @@ export async function POST(request: Request) {
     const matchData = {
       ...validatedData,
       participants: JSON.stringify(validatedData.participants),
+      location: JSON.stringify(validatedData.location),
       scores: JSON.stringify(validatedData.scores),
       verified: false,
     };
@@ -61,6 +65,7 @@ export async function GET() {
       participants: match.participants,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       scores: match.scores,
+      location: match.location,
       // participants: match.participants,
       // scores: match.scores,
     }));
