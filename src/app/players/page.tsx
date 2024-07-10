@@ -1,13 +1,13 @@
 "use client";
 
 import axios from "axios";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import NavBar from "~/components/NavBar";
 import PlayerCard from "~/components/PlayerCard";
 import { ScoreboardComponent } from "~/components/ScoreCard";
 import { type MatchRes } from "~/lib/useFetchMatchList";
 import { type PlayerProfile } from "~/lib/usePlayerProfileCheck";
-import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
 
 type PlayerPageType = {
   playerProfile: PlayerProfile;
@@ -26,61 +26,55 @@ export default function PlayerPage({}) {
         }
       } catch (error) {
         console.error("Error fetching player profile:", error);
-        setError("Failed to load player profile. Please try again later.");
       }
     };
 
     void fetchPlayerProfile();
   }, []);
 
-  const [matches, setMatches] = useState<MatchRes[]>([]);
-  const [playerProfile, setPlayerProfile] = useState<PlayerProfile>();
-  const [playerStats, setPlayerStats] = useState<{
-    wins: number;
-    losses: number;
-  }>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: playerData,
+    error: playerError,
+    isLoading: playerLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["playerData", playerId],
+    queryFn: async () => {
+      const response = await axios.get<PlayerPageType>(
+        `/api/players/${playerId}`,
+      );
+      return response.data;
+    },
+    enabled: !!playerId,
+  });
 
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const [profileResponse, statsResponse] = await Promise.all([
-        axios.get<PlayerPageType>(`/api/players/${playerId}`),
-        axios.get<{ wins: number; losses: number }>(
-          `/api/players/${playerId}/stats`,
-        ),
-      ]);
+  const {
+    data: playerStats,
+    error: statsError,
+    isLoading: statsLoading,
+  } = useQuery({
+    queryKey: ["playerStats", playerId],
+    queryFn: async () => {
+      const response = await axios.get<{ wins: number; losses: number }>(
+        `/api/players/${playerId}/stats`,
+      );
+      return response.data;
+    },
+    enabled: !!playerId,
+  });
 
-      setPlayerProfile(profileResponse.data.playerProfile);
-      setMatches(profileResponse.data.matches);
-      setPlayerStats(statsResponse.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setError("Failed to load player data. Please try again later.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [playerId]);
-
-  useEffect(() => {
-    void fetchData();
-  }, [fetchData]);
-
-  const handleVerificationComplete = () => {
-    void fetchData(); // Refetch all data
-  };
+  const isLoading = playerLoading || statsLoading;
+  const error = playerError ?? statsError;
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>Error</div>;
   }
 
-  if (!playerProfile) {
+  if (isLoading) {
     return <div>Player not found</div>;
   }
   return (
@@ -88,19 +82,19 @@ export default function PlayerPage({}) {
       <NavBar />
       <div className="mx-4 my-20 md:mx-16">
         <PlayerCard
-          {...playerProfile}
+          {...playerData?.playerProfile}
           wins={playerStats?.wins}
           losses={playerStats?.losses}
         />
         <div className="mt-4">
           <h2 className="mb-2 text-2xl font-bold">Match History</h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {matches.map((match) => (
+            {playerData?.matches.map((match) => (
               <ScoreboardComponent
                 key={match.id}
                 match={match}
-                loggedInUser={playerProfile?.playerData?.realName}
-                onVerificationComplete={handleVerificationComplete}
+                loggedInUser={playerData?.playerProfile?.playerData?.realName}
+                onVerificationComplete={refetch}
               />
             ))}
           </div>
