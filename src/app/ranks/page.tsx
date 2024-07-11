@@ -22,7 +22,6 @@ export default function RanksPage() {
         if (response.status !== 200)
           throw new Error("Failed to fetch rankings");
         const data = response.data;
-        console.log(data);
         setPlayers(data);
       } catch (error) {
         console.error("Error fetching rankings:", error);

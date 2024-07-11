@@ -523,7 +523,7 @@ export const PickleballMatchForm: React.FC = () => {
                     valueAsNumber: true,
                   })}
                   type="radio"
-                  value="Home"
+                  value="home"
                   className="form-radio row-span-1"
                   onChange={handleInputChange}
                 />
@@ -536,7 +536,7 @@ export const PickleballMatchForm: React.FC = () => {
                     valueAsNumber: true,
                   })}
                   type="radio"
-                  value="Away"
+                  value="away"
                   className="form-radio row-span-1"
                   onChange={handleInputChange}
                 />

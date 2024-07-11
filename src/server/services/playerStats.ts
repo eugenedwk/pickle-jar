@@ -11,6 +11,7 @@ export async function getPlayerStats(playerId: string) {
 
   const { wins, losses } = playerMatches.reduce(
     (acc, match) => {
+      console.log(acc, match);
       const participants: ParticipantType[] =
         typeof match.participants === "string"
           ? JSON.parse(match.participants)
@@ -21,7 +22,7 @@ export async function getPlayerStats(playerId: string) {
       );
 
       if (playerParticipant) {
-        if (playerParticipant.team === match.outcome) {
+        if (playerParticipant.team === match.outcome.toLowerCase()) {
           acc.wins++;
         } else {
           acc.losses++;

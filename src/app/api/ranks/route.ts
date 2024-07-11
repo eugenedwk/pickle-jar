@@ -26,6 +26,7 @@ export async function GET() {
       }),
     );
 
+    console.log(playersWithStats);
     // Calculate rankings
     const rankings = playersWithStats
       .sort((a, b) => (b.wins ?? 0) - (a.wins ?? 0))
