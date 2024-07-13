@@ -51,6 +51,7 @@ export const players = createTable(
       .references(() => users.id),
     screenName: varchar("screenName", { length: 255 }).notNull(),
     realName: varchar("realName", { length: 255 }),
+    hideRealName: boolean("hideRealName"),
     skillLevel: varchar("skillLevel", { length: 50 }),
     paddleBrand: varchar("paddleBrand", { length: 100 }),
     paddlePreference: varchar("paddlePreference", { length: 100 }),

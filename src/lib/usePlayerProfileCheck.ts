@@ -1,4 +1,3 @@
-import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "~/server/db";
@@ -14,6 +13,7 @@ export const PlayerProfileResSchema = z.object({
   userId: z.string(),
   screenName: z.string(),
   realName: z.string().optional(),
+  hideRealName: z.boolean().default(true),
   skillLevel: z.string().optional(),
   paddleBrand: z.string().optional(),
   paddlePreference: z.string().optional(),

@@ -21,7 +21,7 @@ export async function GET() {
   }
   try {
     const playersRes = await db
-      .select({ id: players.id, name: players.realName })
+      .select({ id: players.id, name: players.screenName })
       .from(players);
     return NextResponse.json(playersRes, { status: 200 });
   } catch (error) {

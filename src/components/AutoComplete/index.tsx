@@ -46,7 +46,7 @@ export const AutocompleteInput = <T extends GenericFormSelectType>({
   );
 
   return (
-    <div className="relative" onBlur={handleBlur} tabIndex={-1}>
+    <div className="relative text-black" onBlur={handleBlur} tabIndex={-1}>
       <Input
         ref={inputRef}
         type="text"

@@ -3,6 +3,7 @@ import ProfilePickle from "~/components/PickleProfile";
 interface PlayerCardProps {
   screenName?: string;
   realName?: string;
+  hideRealName?: boolean;
   skillLevel?: string;
   paddleBrand?: string;
   paddlePreference?: string;
@@ -21,6 +22,7 @@ export default function PlayerCard({
   paddlePreference,
   plays,
   homeCourt,
+  hideRealName,
   imageUrl,
   wins,
   losses,
@@ -46,10 +48,17 @@ export default function PlayerCard({
       <div className="col-span-9 w-full bg-white text-black">
         <div className="space-y-4 p-4 md:p-6 lg:p-8">
           <div className="grid gap-1 text-2xl font-extrabold">
-            {realName ?? (
-              <div className="text-xl font-extrabold">{realName}</div>
+            {hideRealName ? (
+              <>
+                <div className="text-xl font-extrabold">{realName}</div>
+                <div className="text-sm text-green-700">@{screenName}</div>
+              </>
+            ) : (
+              <div className="text-sm text-green-700">@{screenName}</div>
             )}
-            <div className="text-sm text-green-700">@{screenName}</div>
+            <div className="text-xl font-extrabold text-green-700">
+              @{screenName}
+            </div>
           </div>
           <div className="flex gap-4">
             {skillLevel && (

@@ -5,15 +5,27 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { useCreatePlayerProfile } from "~/lib/useCreatePlayerProfile";
 import { toast } from "~/components/ui/use-toast";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { AutocompleteInput } from "~/components/AutoComplete";
+import { Switch } from "~/components/ui/switch";
+import { Label } from "~/components/ui/label";
+
+const LocationSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
 
 const playerSchema = z.object({
   screenName: z.string().min(1, "Username is required"),
   realName: z.string().optional(),
+  hideRealName: z.boolean().default(true),
   skillLevel: z.string().optional(),
   paddleBrand: z.string().optional(),
   paddlePreference: z.string().optional(),
   plays: z.string().optional(),
-  homeCourt: z.string().optional(),
+  homeCourt: LocationSchema,
 });
 
 export type PlayerFormData = z.infer<typeof playerSchema>;
@@ -26,6 +38,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
   const { mutate: createProfile, isPending: isSubmitting } =
     useCreatePlayerProfile();
   const handleSubmit = (data: PlayerFormData) => {
+    console.log("CREATING PROFILE");
     createProfile(data, {
       onSuccess: () => {
         toast({
@@ -66,10 +79,47 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<PlayerFormData>({
     resolver: zodResolver(playerSchema),
   });
+
+  const [locations, setLocations] = useState<{ id: string; name: string }[]>(
+    [],
+  );
+  const [locationInput, setLocationInput] = useState("");
+
+  const { data: locationsData, error: locationsError } = useQuery({
+    queryKey: ["locations"],
+    queryFn: async () => {
+      const response = await axios.get("/api/locations");
+      return response.data as { id: string; name: string }[];
+    },
+  });
+
+  useEffect(() => {
+    if (locationsData) {
+      setLocations(locationsData);
+    }
+    if (locationsError) {
+      console.error("Error fetching locations:", locationsError);
+    }
+  }, [locationsData, locationsError]);
+
+  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocationInput(value);
+    setValue("homeCourt", { id: "", name: value });
+  };
+
+  const handleLocationSelect = (selectedLocation: {
+    id: string;
+    name: string;
+  }) => {
+    setLocationInput(selectedLocation.name);
+    setValue("homeCourt", selectedLocation);
+  };
 
   const onSubmitHandler: SubmitHandler<PlayerFormData> = (data) => {
     onSubmit(data);
@@ -81,12 +131,25 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
       className="space-y-4 rounded-lg bg-white p-6 shadow-md"
     >
       <div>
-        <label
+        <Label
+          htmlFor="realName"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Name
+        </Label>
+        <input
+          {...register("realName")}
+          id="realName"
+          className="mt-1 block w-full rounded-md border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        />
+      </div>
+      <div>
+        <Label
           htmlFor="screenName"
           className="block text-sm font-medium text-gray-700"
         >
-          Username
-        </label>
+          Screen Name
+        </Label>
         <input
           {...register("screenName")}
           id="screenName"
@@ -99,27 +162,26 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
         )}
       </div>
       <div>
-        <label
-          htmlFor="realName"
-          className="block text-sm font-medium text-gray-700"
+        <Label
+          htmlFor="hideRealName"
+          className="flex items-center text-sm font-medium text-gray-700"
         >
-          Real Name (debating on including &ldquo;friends see real name&rdquo;
-          feature)
-        </label>
-        <input
-          {...register("realName")}
-          id="realName"
-          className="mt-1 block w-full rounded-md border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        />
+          <span className="mr-3">
+            Use Screen Name. (Hides real name from public)
+          </span>
+          <div className="relative mr-2 inline-block w-10 select-none align-middle transition duration-200 ease-in">
+            <Switch id="hideRealName" {...register("hideRealName")} />
+          </div>
+        </Label>
       </div>
 
       <div>
-        <label
+        <Label
           htmlFor="skillLevel"
           className="block text-sm font-medium text-gray-700"
         >
           Skill Level
-        </label>
+        </Label>
         <select
           {...register("skillLevel")}
           id="skillLevel"
@@ -134,12 +196,12 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
       </div>
 
       <div>
-        <label
+        <Label
           htmlFor="paddleBrand"
           className="block text-sm font-medium text-gray-700"
         >
           Paddle Brand
-        </label>
+        </Label>
         <input
           {...register("paddleBrand")}
           id="paddleBrand"
@@ -152,7 +214,7 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
           Paddle Preference
         </span>
         <div className="mt-2 space-x-4">
-          <label className="inline-flex items-center">
+          <Label className="inline-flex items-center">
             <input
               type="radio"
               {...register("paddlePreference")}
@@ -160,8 +222,8 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
               className="form-radio text-indigo-600"
             />
             <span className="ml-2 text-black">Control</span>
-          </label>
-          <label className="inline-flex items-center">
+          </Label>
+          <Label className="inline-flex items-center">
             <input
               type="radio"
               {...register("paddlePreference")}
@@ -169,14 +231,14 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
               className="form-radio text-indigo-600"
             />
             <span className="ml-2 text-black">Power</span>
-          </label>
+          </Label>
         </div>
       </div>
 
       <div>
         <span className="block text-sm font-medium text-gray-700">Plays</span>
         <div className="mt-2 space-x-4">
-          <label className="inline-flex items-center">
+          <Label className="inline-flex items-center">
             <input
               type="radio"
               {...register("plays")}
@@ -184,8 +246,8 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
               className="form-radio text-indigo-600"
             />
             <span className="ml-2 text-black">Left Handed</span>
-          </label>
-          <label className="inline-flex items-center">
+          </Label>
+          <Label className="inline-flex items-center">
             <input
               type="radio"
               {...register("plays")}
@@ -193,20 +255,22 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
               className="form-radio text-indigo-600"
             />
             <span className="ml-2 text-black">Right Handed</span>
-          </label>
+          </Label>
         </div>
       </div>
       <div>
-        <label
+        <Label
           htmlFor="homeCourt"
           className="block text-sm font-medium text-gray-700"
         >
           Home Court
-        </label>
-        <input
-          {...register("homeCourt")}
-          id="homeCourt"
-          className="mt-1 block w-full rounded-md border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        </Label>
+        <AutocompleteInput
+          options={locations}
+          onSelect={handleLocationSelect}
+          placeholder="Enter your home court"
+          value={locationInput}
+          onChange={handleLocationChange}
         />
       </div>
 

@@ -14,7 +14,9 @@ export async function GET() {
       .select({
         id: players.id,
         userId: players.userId,
-        name: players.realName,
+        realName: players.realName,
+        screenName: players.screenName,
+        hideRealName: players.hideRealName,
       })
       .from(players);
 
@@ -22,7 +24,13 @@ export async function GET() {
     const playersWithStats = await Promise.all(
       playersList.map(async (player) => {
         const stats = await getPlayerStats(player.id);
-        return { ...player, ...stats };
+        return {
+          ...player,
+          ...stats,
+          displayName: player.hideRealName
+            ? player.screenName
+            : player.realName,
+        };
       }),
     );
 
