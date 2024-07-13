@@ -27,24 +27,21 @@ export default function HomePage() {
         <Dashboard />
         {/* <DynamicDashboard /> */}
       </div>
+      <div className="hero-banner w-full bg-blue-800 px-4 py-12 text-center">
+        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+          <div className="group relative inline-block w-full">
+            Dedicated to Sam Youn.
+            <div className="absolute left-1/2 top-full hidden translate-x-1/2 transform group-hover:block">
+              <img
+                src="/samtheman.jpg"
+                alt="He's the man"
+                className="h-64 w-64 object-cover"
+              />
+            </div>
+          </div>
+          He&apos;s single and ready to mingle.
+        </h1>
+      </div>
     </main>
   );
-}
-
-{
-  /* <div className="hero-banner w-full bg-blue-800 px-4 py-12 text-center">
-  <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-    <div className="group relative inline-block w-full">
-      Dedicated to Sam Youn.
-      <div className="absolute left-1/2 top-full hidden translate-x-1/2 transform group-hover:block">
-        <img
-          src="/samtheman.jpg"
-          alt="He's the man"
-          className="h-64 w-64 object-cover"
-        />
-      </div>
-    </div>
-    He&apos;s single and ready to mingle.
-  </h1>
-</div> */
 }

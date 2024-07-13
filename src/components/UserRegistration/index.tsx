@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AutocompleteInput } from "~/components/AutoComplete";
 import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
+import { Button } from "../ui/button";
 
 const LocationSchema = z.object({
   id: z.string(),
@@ -170,7 +171,11 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
             Use Screen Name. (Hides real name from public)
           </span>
           <div className="relative mr-2 inline-block w-10 select-none align-middle transition duration-200 ease-in">
-            <Switch id="hideRealName" {...register("hideRealName")} />
+            <Switch
+              id="hideRealName"
+              {...register("hideRealName")}
+              checked={true}
+            />
           </div>
         </Label>
       </div>
@@ -274,12 +279,14 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
         />
       </div>
 
-      <button
+      <Button
         type="submit"
-        className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        disabled={isSubmitting}
+        className="w-full rounded-md border border-transparent bg-green-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+        onClick={() => console.log("Submit button clicked")}
       >
         {isSubmitting ? "Submitting..." : "Submit"}
-      </button>
+      </Button>
     </form>
   );
 };
