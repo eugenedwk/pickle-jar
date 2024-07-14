@@ -5,7 +5,8 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
-import GoogleProvider from "next-auth/providers/google";
+import Auth0Provider from "next-auth/providers/auth0";
+import { env } from "process";
 
 import { db } from "~/server/db";
 import {
@@ -67,9 +68,14 @@ export const authOptions: NextAuthOptions = {
     verificationTokensTable: verificationTokens,
   }) as Adapter,
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID!,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    // }),
+    Auth0Provider({
+      clientId: process.env.AUTH0_CLIENT_ID!,
+      clientSecret: process.env.AUTH0_CLIENT_SECRET!,
+      issuer: process.env.AUTH0_ISSUER!,
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,

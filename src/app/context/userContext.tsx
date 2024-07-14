@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { env } from "~/env";
 
 type UserContextType = {
   isAuthenticated: boolean;

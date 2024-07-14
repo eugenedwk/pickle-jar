@@ -20,18 +20,31 @@ export default function HomePage() {
           <h1 className="text-5xl font-extrabold tracking-wide text-white sm:text-[5rem]">
             <div className="text-green-200">PICKLEBACK Pro</div>
           </h1>
-          <div className="text-base font-extrabold tracking-tight text-green-200">
-            Nova&apos;s next best alternative to dating apps.
-          </div>
+          {(() => {
+            const slogans = [
+              "Nova's next best alternative to dating apps.",
+              "Guaranteed to improve your game...somehow",
+              "Sam Youn is single.",
+              "We're not really sure what we're doing",
+              "Straight facts, no chaser.",
+            ];
+            const randomSlogan =
+              slogans[Math.floor(Math.random() * slogans.length)];
+            return (
+              <div className="text-base font-extrabold tracking-tight text-green-200">
+                {randomSlogan}
+              </div>
+            );
+          })()}
         </div>
         <Dashboard />
         {/* <DynamicDashboard /> */}
       </div>
-      <div className="hero-banner w-full bg-blue-800 px-4 py-12 text-center">
-        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+      <div className="hero-banner w-full bg-green-800 px-4 py-12 text-center">
+        <h1 className="text-xs font-extrabold tracking-tight text-white">
           <div className="group relative inline-block w-full">
             Dedicated to Sam Youn.
-            <div className="absolute left-1/2 top-full hidden translate-x-1/2 transform group-hover:block">
+            <div className="absolute left-1/2 top-full hidden -translate-y-16 translate-x-1/2 transform group-hover:block">
               <img
                 src="/samtheman.jpg"
                 alt="He's the man"
