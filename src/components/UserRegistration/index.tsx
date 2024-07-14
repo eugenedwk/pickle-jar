@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { useCreatePlayerProfile } from "~/lib/useCreatePlayerProfile";
 import { toast } from "~/components/ui/use-toast";
@@ -26,7 +26,7 @@ const playerSchema = z.object({
   paddleBrand: z.string().optional(),
   paddlePreference: z.string().optional(),
   plays: z.string().optional(),
-  homeCourt: LocationSchema,
+  homeCourt: LocationSchema.optional(),
 });
 
 export type PlayerFormData = z.infer<typeof playerSchema>;
@@ -39,7 +39,6 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
   const { mutate: createProfile, isPending: isSubmitting } =
     useCreatePlayerProfile();
   const handleSubmit = (data: PlayerFormData) => {
-    console.log("CREATING PROFILE");
     createProfile(data, {
       onSuccess: () => {
         toast({
@@ -81,15 +80,22 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
     register,
     handleSubmit,
     setValue,
+    watch,
+    control,
+
     formState: { errors },
   } = useForm<PlayerFormData>({
     resolver: zodResolver(playerSchema),
+    defaultValues: {
+      hideRealName: true,
+    },
   });
 
   const [locations, setLocations] = useState<{ id: string; name: string }[]>(
     [],
   );
   const [locationInput, setLocationInput] = useState("");
+  const hideRealName = watch("hideRealName");
 
   const { data: locationsData, error: locationsError } = useQuery({
     queryKey: ["locations"],
@@ -162,21 +168,24 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
           </span>
         )}
       </div>
-      <div>
-        <Label
-          htmlFor="hideRealName"
-          className="flex items-center text-sm font-medium text-gray-700"
-        >
-          <span className="mr-3">
-            Use Screen Name. (Hides real name from public)
-          </span>
-          <div className="relative mr-2 inline-block w-10 select-none align-middle transition duration-200 ease-in">
+
+      <div className="flex items-center space-x-2">
+        <Controller
+          name="hideRealName"
+          control={control}
+          render={({ field }) => (
             <Switch
               id="hideRealName"
-              {...register("hideRealName")}
-              checked={true}
+              checked={field.value}
+              onCheckedChange={field.onChange}
             />
-          </div>
+          )}
+        />
+        <Label
+          htmlFor="hideRealName"
+          className="text-sm font-medium text-gray-700"
+        >
+          Use Screen Name (Hides real name from public)
         </Label>
       </div>
 
@@ -223,7 +232,7 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
             <input
               type="radio"
               {...register("paddlePreference")}
-              value="control"
+              value="Control"
               className="form-radio text-indigo-600"
             />
             <span className="ml-2 text-black">Control</span>
@@ -232,7 +241,7 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
             <input
               type="radio"
               {...register("paddlePreference")}
-              value="power"
+              value="Power"
               className="form-radio text-indigo-600"
             />
             <span className="ml-2 text-black">Power</span>
@@ -283,7 +292,6 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
         type="submit"
         disabled={isSubmitting}
         className="w-full rounded-md border border-transparent bg-green-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-        onClick={() => console.log("Submit button clicked")}
       >
         {isSubmitting ? "Submitting..." : "Submit"}
       </Button>

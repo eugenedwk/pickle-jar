@@ -4,6 +4,11 @@ import { db } from "~/server/db";
 import { players } from "~/server/db/schema";
 import { getServerAuthSession } from "~/server/auth";
 
+const LocationSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
 const PlayerSchema = z.object({
   screenName: z.string().min(1, "Username is required"),
   realName: z.string().optional(),
@@ -11,7 +16,7 @@ const PlayerSchema = z.object({
   paddleBrand: z.string().optional(),
   paddlePreference: z.string().optional(),
   plays: z.string().optional(),
-  homeCourt: z.string().optional(),
+  homeCourt: LocationSchema.optional(),
 });
 
 export async function GET() {
@@ -40,11 +45,14 @@ export async function POST(request: Request) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const body = await request.json();
     const validatedData = PlayerSchema.parse(body);
-
+    const playerData = {
+      ...validatedData,
+      homeCourt: JSON.stringify(validatedData.homeCourt),
+    };
     const newPlayer = await db
       .insert(players)
       .values({
-        ...validatedData,
+        ...playerData,
         userId: userId,
       })
       .returning();

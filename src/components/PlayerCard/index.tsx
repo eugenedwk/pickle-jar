@@ -1,4 +1,5 @@
 import ProfilePickle from "~/components/PickleProfile";
+import { type Location } from "~/server/db/schema";
 
 interface PlayerCardProps {
   screenName?: string;
@@ -8,7 +9,7 @@ interface PlayerCardProps {
   paddleBrand?: string;
   paddlePreference?: string;
   plays?: string;
-  homeCourt?: string;
+  homeCourt?: Location;
   imageUrl?: string;
   wins?: number;
   losses?: number;
@@ -23,7 +24,6 @@ export default function PlayerCard({
   plays,
   homeCourt,
   hideRealName,
-  imageUrl,
   wins,
   losses,
 }: PlayerCardProps) {
@@ -96,7 +96,7 @@ export default function PlayerCard({
                 <div className="text-xs font-medium text-green-700">
                   Home Court
                 </div>
-                <div>{homeCourt}</div>
+                <div>{homeCourt.name}</div>
               </div>
             )}
           </div>

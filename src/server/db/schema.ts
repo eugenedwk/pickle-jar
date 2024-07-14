@@ -56,7 +56,7 @@ export const players = createTable(
     paddleBrand: varchar("paddleBrand", { length: 100 }),
     paddlePreference: varchar("paddlePreference", { length: 100 }),
     plays: varchar("plays", { length: 50 }),
-    homeCourt: varchar("homeCourt", { length: 255 }),
+    homeCourt: jsonb("homeCourt"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

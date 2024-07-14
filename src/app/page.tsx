@@ -21,7 +21,7 @@ export default function HomePage() {
             <div className="text-green-200">PICKLEBACK Pro</div>
           </h1>
           <div className="text-base font-extrabold tracking-tight text-green-200">
-            BETA - Last updated ...idk man
+            Nova&apos;s next best alternative to dating apps.
           </div>
         </div>
         <Dashboard />
@@ -35,7 +35,7 @@ export default function HomePage() {
               <img
                 src="/samtheman.jpg"
                 alt="He's the man"
-                className="h-64 w-64 object-cover"
+                className="h-32 w-32 object-cover"
               />
             </div>
           </div>

@@ -83,7 +83,7 @@ const BotNavContent = () => (
           </div>
           <div>
             <Link
-              href="/"
+              href="/players"
               className="flex flex-col items-center text-white hover:text-green-200"
             >
               <UserCircleIcon className="h-5 w-5" />

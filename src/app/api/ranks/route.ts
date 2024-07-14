@@ -3,10 +3,6 @@ import { db } from "~/server/db";
 import { players } from "~/server/db/schema";
 import { getPlayerStats } from "~/server/services/playerStats";
 
-// import { type z } from "zod";
-// import { type PlayerSchema } from "../players/route";
-// type Player = z.infer<typeof PlayerSchema>;
-
 export async function GET() {
   try {
     // Fetch all players

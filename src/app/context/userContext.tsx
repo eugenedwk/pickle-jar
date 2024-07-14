@@ -14,7 +14,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [hasPlayerProfile, setHasPlayerProfile] = useState(false);
   const [playerData, setPlayerData] = useState<string[] | null>(null);

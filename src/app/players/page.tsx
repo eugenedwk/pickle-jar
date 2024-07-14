@@ -8,6 +8,7 @@ import { ScoreboardComponent } from "~/components/ScoreCard";
 import { type MatchRes } from "~/lib/useFetchMatchList";
 import { type PlayerProfile } from "~/lib/usePlayerProfileCheck";
 import { useQuery } from "@tanstack/react-query";
+import LoadingPage from "~/components/LoadingPage";
 
 type PlayerPageType = {
   playerProfile: PlayerProfile;
@@ -67,16 +68,14 @@ export default function PlayerPage({}) {
   const error = playerError ?? statsError;
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingPage />;
   }
 
   if (error) {
     return <div>Error</div>;
   }
 
-  if (isLoading) {
-    return <div>Player not found</div>;
-  }
+  console.log(playerData);
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-green-900 text-white">
       <NavBar />

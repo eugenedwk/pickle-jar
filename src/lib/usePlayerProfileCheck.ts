@@ -18,7 +18,15 @@ export const PlayerProfileResSchema = z.object({
   paddleBrand: z.string().optional(),
   paddlePreference: z.string().optional(),
   plays: z.string().optional(),
-  homeCourt: z.string().optional(),
+  homeCourt: z
+    .object({
+      name: z.string(),
+      id: z.string(),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+      createdBy: z.string(),
+    })
+    .optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
