@@ -1,6 +1,8 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useCallback, useState } from "react";
+import { Dialog, DialogContent } from "~/components/ui/dialog";
 
 import PlayerCard from "~/components/PlayerCard";
 import { usePlayerProfileCheck } from "~/lib/hooks";
@@ -8,10 +10,10 @@ import { useFetchMatchList, type MatchRes } from "~/lib/useFetchMatchList";
 import PickleballMatchForm from "../PickleballMatchForm";
 import { ScoreboardComponent } from "../ScoreCard";
 import { OnboardingForm } from "../UserRegistration";
-import { useCallback, useState } from "react";
 
 const Dashboard: React.FC = () => {
   const [forceUpdate, setForceUpdate] = useState(0);
+  const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
 
   const { data: session, status } = useSession();
   const sessionId = session?.user.id;
@@ -28,6 +30,7 @@ const Dashboard: React.FC = () => {
   } = useFetchMatchList();
   const handleOnboardingComplete = useCallback(() => {
     setForceUpdate((prev) => prev + 1);
+    setShowOnboardingDialog(false);
   }, []);
 
   if (status === "loading" || isLoading) {
@@ -45,14 +48,23 @@ const Dashboard: React.FC = () => {
 
   const showOnboarding = !playerProfileData?.hasProfile;
   const realNamePLZ = playerProfileData?.playerData?.realName ?? "";
+
+  if (showOnboarding && !showOnboardingDialog) {
+    setShowOnboardingDialog(true);
+  }
+
   return (
     <div>
-      <div className="w-full md:m-8">
-        {showOnboarding ? (
+      <Dialog
+        open={showOnboardingDialog}
+        onOpenChange={setShowOnboardingDialog}
+      >
+        <DialogContent>
           <OnboardingForm onComplete={handleOnboardingComplete} />
-        ) : (
-          <PlayerCard {...playerProfileData.playerData} />
-        )}
+        </DialogContent>
+      </Dialog>
+      <div className="w-full md:m-8">
+        {!showOnboarding && <PlayerCard {...playerProfileData.playerData} />}
         <div className="w-full bg-white"></div>
       </div>
       <div className="my-8 flex w-full flex-col md:flex-row">
