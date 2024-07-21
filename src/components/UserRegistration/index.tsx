@@ -8,10 +8,14 @@ import { toast } from "~/components/ui/use-toast";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { AutocompleteInput } from "~/components/AutoComplete";
+import {
+  AutocompleteInput,
+  type GenericFormSelectType,
+} from "~/components/AutoComplete";
 import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
 import { Button } from "../ui/button";
+import { LocationForm } from "../LocationForm";
 
 const LocationSchema = z.object({
   id: z.string(),
@@ -94,6 +98,8 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
   const [locations, setLocations] = useState<{ id: string; name: string }[]>(
     [],
   );
+  const [isLocationFormOpen, setIsLocationFormOpen] = useState(false);
+
   const [locationInput, setLocationInput] = useState("");
   const hideRealName = watch("hideRealName");
 
@@ -286,6 +292,34 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
           value={locationInput}
           onChange={handleLocationChange}
         />
+        <div className="mt-2 text-xs">
+          <button
+            type="button"
+            className="text-blue-600 hover:underline focus:outline-none"
+            onClick={() => setIsLocationFormOpen(true)}
+          >
+            Don&apos;t see your location? Add a new one
+          </button>
+        </div>
+        {isLocationFormOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+              <h3 className="mb-4 text-lg font-semibold">Add New Location</h3>
+              <LocationForm
+                onSubmit={async (newLocation: GenericFormSelectType) => {
+                  // Add the new location to the locations list
+                  setLocations([...locations, newLocation]);
+                  // Select the new location
+                  setLocationInput(newLocation.name);
+                  setValue("homeCourt", newLocation);
+                  // Close the popover
+                  setIsLocationFormOpen(false);
+                }}
+                onCancel={() => setIsLocationFormOpen(false)}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <Button
