@@ -6,6 +6,7 @@ import NavBar from "~/components/NavBar";
 import PlayerCard from "~/components/PlayerCard";
 import { ScoreboardComponent } from "~/components/ScoreCard";
 import { type MatchRes } from "~/lib/useFetchMatchList";
+import Image from "next/image";
 import { type PlayerProfile } from "~/lib/usePlayerProfileCheck";
 
 type PlayerPageType = {
@@ -59,9 +60,14 @@ export default function PlayerPage({
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="animate-spin">
+          <Image src="/pickle.svg" alt="Loading" width={100} height={100} />
+        </div>
+      </div>
+    );
   }
-
   if (error) {
     return <div>Error: {error}</div>;
   }

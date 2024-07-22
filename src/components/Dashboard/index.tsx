@@ -10,6 +10,7 @@ import { useFetchMatchList, type MatchRes } from "~/lib/useFetchMatchList";
 import PickleballMatchForm from "../PickleballMatchForm";
 import { ScoreboardComponent } from "../ScoreCard";
 import { OnboardingForm } from "../UserRegistration";
+import { LoadingPickle } from "../LoadingPickle";
 
 const Dashboard: React.FC = () => {
   const [forceUpdate, setForceUpdate] = useState(0);
@@ -34,7 +35,7 @@ const Dashboard: React.FC = () => {
   }, []);
 
   if (status === "loading" || isLoading) {
-    return <p>Loading...</p>;
+    return <LoadingPickle />;
   }
 
   if (status === "unauthenticated") {
@@ -63,7 +64,7 @@ const Dashboard: React.FC = () => {
           <OnboardingForm onComplete={handleOnboardingComplete} />
         </DialogContent>
       </Dialog>
-      <div className="w-full md:m-8">
+      <div className="w-full md:my-8">
         {!showOnboarding && <PlayerCard {...playerProfileData.playerData} />}
         <div className="w-full bg-white"></div>
       </div>
