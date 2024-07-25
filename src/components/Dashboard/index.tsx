@@ -60,7 +60,7 @@ const Dashboard: React.FC = () => {
         open={showOnboardingDialog}
         onOpenChange={setShowOnboardingDialog}
       >
-        <DialogContent>
+        <DialogContent className="mt-10">
           <OnboardingForm onComplete={handleOnboardingComplete} />
         </DialogContent>
       </Dialog>

@@ -9,6 +9,8 @@ import {
 import { useToast } from "~/components/ui/use-toast";
 import { LocationForm } from "../LocationForm";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
 // type FormData = z.infer<typeof MatchSchema>;
 
@@ -461,7 +463,7 @@ export const PickleballMatchForm: React.FC = () => {
                   Round {score.round}
                 </label>
                 <div className="row-span-1">
-                  <input
+                  <Input
                     {...register(`scores.${index}.home` as const, {
                       required: "Home team score is required",
                       valueAsNumber: true,
@@ -486,7 +488,7 @@ export const PickleballMatchForm: React.FC = () => {
                   )}
                 </div>
                 <div className="row-span-1">
-                  <input
+                  <Input
                     {...register(`scores.${index}.away` as const, {
                       required: "Away team score is required",
                       valueAsNumber: true,
@@ -515,33 +517,33 @@ export const PickleballMatchForm: React.FC = () => {
           ))}
           <div className="col-span-2">
             <div className="grid h-full grid-rows-3 items-center gap-2">
-              <label className="font-bold">Winner?</label>
-              <div>
-                <input
-                  {...register("outcome", {
-                    required: "Outcome is required",
-                    valueAsNumber: true,
-                  })}
-                  type="radio"
-                  value="home"
-                  className="form-radio row-span-1"
-                  onChange={handleInputChange}
-                />
-                <span className="ml-2">Home</span>
-              </div>
-              <div>
-                <input
-                  {...register("outcome", {
-                    required: "Outcome is required",
-                    valueAsNumber: true,
-                  })}
-                  type="radio"
-                  value="away"
-                  className="form-radio row-span-1"
-                  onChange={handleInputChange}
-                />
-                <span className="ml-2">Away</span>
-              </div>
+              <RadioGroup>
+                <label className="font-bold">Winner?</label>
+                <div>
+                  <RadioGroupItem
+                    {...register("outcome", {
+                      required: "Outcome is required",
+                      valueAsNumber: true,
+                    })}
+                    value="home"
+                    className="form-radio row-span-1"
+                    onClick={() => handleInputChange}
+                  />
+                  <span className="ml-2">Home</span>
+                </div>
+                <div>
+                  <RadioGroupItem
+                    {...register("outcome", {
+                      required: "Outcome is required",
+                      valueAsNumber: true,
+                    })}
+                    value="away"
+                    className="form-radio row-span-1"
+                    onClick={() => handleInputChange}
+                  />
+                  <span className="ml-2">Away</span>
+                </div>
+              </RadioGroup>
             </div>
           </div>
         </div>
@@ -552,35 +554,35 @@ export const PickleballMatchForm: React.FC = () => {
         </h2>
         <div className="mb-4 flex flex-col justify-between gap-4 md:flex-row">
           <div>
-            <label className="mb-2 block font-medium">Game Type</label>
-            <div className="flex flex-col">
-              <div>
-                <label className="flex items-center">
-                  <input
-                    {...register("gameType", {
-                      required: "Game type is required",
-                    })}
-                    type="radio"
-                    value="Casual"
-                    className="mr-2"
-                  />
-                  Casual
-                </label>
+            <RadioGroup>
+              <label className="mb-2 block font-medium">Game Type</label>
+              <div className="flex flex-col">
+                <div>
+                  <label className="flex items-center">
+                    <RadioGroupItem
+                      {...register("gameType", {
+                        required: "Game type is required",
+                      })}
+                      value="Casual"
+                      className="mr-2"
+                    />
+                    Casual
+                  </label>
+                </div>
+                <div>
+                  <label className="flex items-center">
+                    <RadioGroupItem
+                      {...register("gameType", {
+                        required: "Game type is required",
+                      })}
+                      value="Ranked"
+                      className="mr-2"
+                    />
+                    Ranked
+                  </label>
+                </div>
               </div>
-              <div>
-                <label className="flex items-center">
-                  <input
-                    {...register("gameType", {
-                      required: "Game type is required",
-                    })}
-                    type="radio"
-                    value="Ranked"
-                    className="mr-2"
-                  />
-                  Ranked
-                </label>
-              </div>
-            </div>
+            </RadioGroup>
             {errors.gameType && (
               <p className="mt-1 text-sm text-red-500">
                 {errors.gameType.message}
@@ -604,13 +606,13 @@ export const PickleballMatchForm: React.FC = () => {
               </p>
             )}
             <div className="mt-2 text-xs">
-              <button
+              <Button
                 type="button"
-                className="text-blue-600 hover:underline focus:outline-none"
+                className="text-white hover:underline focus:outline-none"
                 onClick={() => setIsLocationFormOpen(true)}
               >
                 Don&apos;t see your location? Add a new one
-              </button>
+              </Button>
             </div>
             {isLocationFormOpen && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -642,7 +644,7 @@ export const PickleballMatchForm: React.FC = () => {
             <label htmlFor="date" className="mb-2 block font-medium">
               Date
             </label>
-            <input
+            <Input
               {...register("date", { required: "Date is required" })}
               id="date"
               type="date"

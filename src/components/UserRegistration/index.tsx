@@ -16,6 +16,15 @@ import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
 import { Button } from "../ui/button";
 import { LocationForm } from "../LocationForm";
+import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { stateList } from "~/lib/stateList";
 
 const LocationSchema = z.object({
   id: z.string(),
@@ -31,6 +40,7 @@ const playerSchema = z.object({
   paddlePreference: z.string().optional(),
   plays: z.string().optional(),
   homeCourt: LocationSchema.optional(),
+  state: z.string().optional(),
 });
 
 export type PlayerFormData = z.infer<typeof playerSchema>;
@@ -141,7 +151,7 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmitHandler)}
-      className="space-y-4 rounded-lg bg-white p-6 shadow-md"
+      className="max-h-[75vh] space-y-4 overflow-y-auto rounded-lg bg-white p-6 shadow-md"
     >
       <div>
         <Label
@@ -150,7 +160,7 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
         >
           Name
         </Label>
-        <input
+        <Input
           {...register("realName")}
           id="realName"
           className="mt-1 block w-full rounded-md border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -163,7 +173,7 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
         >
           Screen Name
         </Label>
-        <input
+        <Input
           {...register("screenName")}
           id="screenName"
           className="mt-1 block w-full rounded-md border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -202,17 +212,17 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
         >
           Skill Level
         </Label>
-        <select
-          {...register("skillLevel")}
-          id="skillLevel"
-          className="mt-1 block w-full rounded-md border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        >
-          <option value="">Select skill level</option>
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Advanced">Advanced</option>
-          <option value="Try Hard">Try Hard</option>
-        </select>
+        <Select onValueChange={(value) => setValue("skillLevel", value)}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select skill level" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Beginner">Beginner</SelectItem>
+            <SelectItem value="Intermediate">Intermediate</SelectItem>
+            <SelectItem value="Advanced">Advanced</SelectItem>
+            <SelectItem value="Try Hard">Try Hard</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div>
@@ -222,7 +232,7 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
         >
           Paddle Brand
         </Label>
-        <input
+        <Input
           {...register("paddleBrand")}
           id="paddleBrand"
           className="mt-1 block w-full rounded-md border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -235,7 +245,7 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
         </span>
         <div className="mt-2 space-x-4">
           <Label className="inline-flex items-center">
-            <input
+            <Input
               type="radio"
               {...register("paddlePreference")}
               value="Control"
@@ -244,7 +254,7 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
             <span className="ml-2 text-black">Control</span>
           </Label>
           <Label className="inline-flex items-center">
-            <input
+            <Input
               type="radio"
               {...register("paddlePreference")}
               value="Power"
@@ -258,8 +268,8 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
       <div>
         <span className="block text-sm font-medium text-gray-700">Plays</span>
         <div className="mt-2 space-x-4">
-          <Label className="inline-flex items-center">
-            <input
+          <Label className="inline-flex items-center whitespace-nowrap">
+            <Input
               type="radio"
               {...register("plays")}
               value="Left-Handed"
@@ -267,8 +277,8 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
             />
             <span className="ml-2 text-black">Left Handed</span>
           </Label>
-          <Label className="inline-flex items-center">
-            <input
+          <Label className="inline-flex items-center whitespace-nowrap">
+            <Input
               type="radio"
               {...register("plays")}
               value="Right-Handed"
@@ -276,6 +286,31 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
             />
             <span className="ml-2 text-black">Right Handed</span>
           </Label>
+        </div>
+      </div>
+      <div>
+        <Label
+          htmlFor="state"
+          className="block text-sm font-medium text-gray-700"
+        >
+          State
+        </Label>
+        <div
+          id="state"
+          className="mt-1 block w-full rounded-md border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        >
+          <Select onValueChange={(value) => setValue("state", value)}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a state" />
+            </SelectTrigger>
+            <SelectContent>
+              {stateList.map((state) => (
+                <SelectItem key={state.value} value={state.value}>
+                  {state.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
       <div>
