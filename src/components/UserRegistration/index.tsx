@@ -151,7 +151,7 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmitHandler)}
-      className="max-h-[75vh] space-y-4 overflow-y-auto rounded-lg bg-white p-6 shadow-md"
+      className="max-h-[65vh] space-y-2 overflow-y-auto rounded-lg bg-white p-6 shadow-md"
     >
       <div>
         <Label
@@ -240,11 +240,11 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
       </div>
 
       <div>
-        <span className="block text-sm font-medium text-gray-700">
+        <span className="text-sm font-medium text-gray-700">
           Paddle Preference
         </span>
-        <div className="mt-2 space-x-4">
-          <Label className="inline-flex items-center">
+        <div className="flex whitespace-nowrap">
+          <Label className="flex items-center">
             <Input
               type="radio"
               {...register("paddlePreference")}
@@ -253,7 +253,9 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
             />
             <span className="ml-2 text-black">Control</span>
           </Label>
-          <Label className="inline-flex items-center">
+        </div>
+        <div className="flex whitespace-nowrap">
+          <Label className="flex items-center">
             <Input
               type="radio"
               {...register("paddlePreference")}
@@ -266,9 +268,9 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
       </div>
 
       <div>
-        <span className="block text-sm font-medium text-gray-700">Plays</span>
-        <div className="mt-2 space-x-4">
-          <Label className="inline-flex items-center whitespace-nowrap">
+        <span className="text-sm font-medium text-gray-700">Plays</span>
+        <div className="flex whitespace-nowrap">
+          <Label className="flex items-center">
             <Input
               type="radio"
               {...register("plays")}
@@ -277,7 +279,9 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
             />
             <span className="ml-2 text-black">Left Handed</span>
           </Label>
-          <Label className="inline-flex items-center whitespace-nowrap">
+        </div>
+        <div className="flex whitespace-nowrap">
+          <Label className="flex items-center">
             <Input
               type="radio"
               {...register("plays")}

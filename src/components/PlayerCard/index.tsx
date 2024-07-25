@@ -60,7 +60,7 @@ export default function PlayerCard({
               @{screenName}
             </div>
           </div>
-          <div className="flex gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
             {skillLevel && (
               <div className="space-y-1">
                 <div className="text-xs font-medium text-green-700">
@@ -99,15 +99,15 @@ export default function PlayerCard({
                 <div>{homeCourt.name}</div>
               </div>
             )}
-          </div>
-          {wins !== undefined && losses !== undefined && (
-            <div className="space-y-1">
-              <div className="text-xs font-medium text-green-700">Record</div>
-              <div>
-                {wins}W - {losses}L
+            {wins !== undefined && losses !== undefined && (
+              <div className="space-y-1">
+                <div className="text-xs font-medium text-green-700">Record</div>
+                <div>
+                  {wins}W - {losses}L
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

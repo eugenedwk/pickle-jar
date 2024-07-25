@@ -301,7 +301,7 @@ export const PickleballMatchForm: React.FC = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mx-auto rounded-lg bg-white p-6 text-black shadow-md md:gap-6"
+      className="mx-auto rounded-lg bg-white p-0 text-black shadow-md md:gap-6 md:p-6"
     >
       <div className="mb-2 md:col-span-2">
         <h2 className="text-left text-4xl font-bold text-green-800">
@@ -315,7 +315,7 @@ export const PickleballMatchForm: React.FC = () => {
         <h2 className="mb-4 text-left text-2xl font-bold text-green-800">
           Players
         </h2>
-        <div className="mb-4 grid grid-cols-2 gap-4">
+        <div className="mb-4 grid-cols-2 gap-4">
           <div>
             <label htmlFor="playerName" className="mb-2 block font-medium">
               Home #1
@@ -371,17 +371,17 @@ export const PickleballMatchForm: React.FC = () => {
             )}
           </div>
         </div>
-        <div className="mb-4 grid grid-cols-2 gap-4">
+        <div className="mb-4 grid-cols-2 gap-4">
           <div className="mb-4">
             <label htmlFor="away1Name" className="mb-2 block font-medium">
-              Opponent #1
+              Away #1
             </label>
             <AutocompleteInput
               options={playerOptions}
               onSelect={handlePlayerSelect(
                 "participants.away1" as keyof MatchInputs,
               )}
-              placeholder="Enter opponents name"
+              placeholder="Enter Aways name"
               value={formData.participants.away1.playerName}
               onChange={(e) =>
                 handleInputChange({
@@ -403,14 +403,14 @@ export const PickleballMatchForm: React.FC = () => {
           <div>
             <div className="mb-4">
               <label htmlFor="away2Name" className="mb-2 block font-medium">
-                Opponent #2
+                Away #2
               </label>
               <AutocompleteInput
                 options={playerOptions}
                 onSelect={handlePlayerSelect(
                   "participants.away2" as keyof MatchInputs,
                 )}
-                placeholder="Enter opponents name"
+                placeholder="Enter Away name"
                 value={formData.participants.away2.playerName}
                 onChange={(e) =>
                   handleInputChange({
@@ -435,116 +435,115 @@ export const PickleballMatchForm: React.FC = () => {
         <h2 className="mb-4 text-left text-2xl font-bold text-green-800">
           Score Card
         </h2>
-        <div className="mb-6 grid grid-cols-12 gap-4">
-          <div
-            id="scoreboard-player-names"
-            className="col-span-3 grid grid-rows-3 items-center gap-2 md:col-span-4 "
-          >
-            <div className="row-span-1 text-right font-bold">Players</div>
-            <div className="row-span-1 text-right font-bold">
-              <span className="hidden md:inline">
-                {formData.participants.home1.playerName} /
-                {formData.participants.home2.playerName}
-              </span>
-              <span className="md:hidden">Home</span>
-            </div>
-            <div className="row-span-1 text-right font-bold">
-              <span className="hidden md:inline">
-                {formData.participants.away1.playerName} /
-                {formData.participants.away2.playerName}
-              </span>
-              <span className="md:hidden">Away</span>
-            </div>
+        <div className="mb-6 grid grid-cols-12 gap-1 text-xs md:gap-4 md:text-base">
+          {/* Row 1: Headers */}
+          <div className="col-span-2 text-right font-bold md:col-span-3">
+            Players
           </div>
-          {formData.scores.map((score, index) => (
-            <div key={score.round} className="col-span-2">
-              <div className="grid grid-rows-3 items-center md:gap-2">
-                <label className="row-span-1 font-bold">
-                  Round {score.round}
-                </label>
-                <div className="row-span-1">
-                  <Input
-                    {...register(`scores.${index}.home` as const, {
-                      required: "Home team score is required",
-                      valueAsNumber: true,
-                      min: { value: 0, message: "Score must be non-negative" },
-                    })}
-                    type="number"
-                    min="0"
-                    defaultValue={0}
-                    className="w-8 rounded-md border md:w-full md:px-2 md:py-2"
-                    onChange={(e) =>
-                      handleScoreChange(
-                        score.round,
-                        "home",
-                        parseInt(e.target.value),
-                      )
-                    }
-                  />
-                  {errors.scores?.[index]?.home && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {errors.scores[index]?.home?.message}
-                    </p>
-                  )}
-                </div>
-                <div className="row-span-1">
-                  <Input
-                    {...register(`scores.${index}.away` as const, {
-                      required: "Away team score is required",
-                      valueAsNumber: true,
-                      min: { value: 0, message: "Score must be non-negative" },
-                    })}
-                    type="number"
-                    min="0"
-                    defaultValue={0}
-                    className="w-8 rounded-md  border md:w-full md:px-2 md:py-2"
-                    onChange={(e) =>
-                      handleScoreChange(
-                        score.round,
-                        "away",
-                        parseInt(e.target.value),
-                      )
-                    }
-                  />
-                  {errors.scores?.[index]?.away && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {errors.scores[index]?.away?.message}
-                    </p>
-                  )}
-                </div>
-              </div>
+          {formData.scores.map((score) => (
+            <div key={score.round} className="col-span-2 font-bold">
+              <span className="md:hidden">Rd {score.round}</span>
+              <span className="hidden md:inline">Round {score.round}</span>
             </div>
           ))}
-          <div className="col-span-2">
-            <div className="grid h-full grid-rows-3 items-center gap-2">
-              <RadioGroup>
-                <label className="font-bold">Winner?</label>
-                <div>
-                  <RadioGroupItem
-                    {...register("outcome", {
-                      required: "Outcome is required",
-                      valueAsNumber: true,
-                    })}
-                    value="home"
-                    className="form-radio row-span-1"
-                    onClick={() => handleInputChange}
-                  />
-                  <span className="ml-2">Home</span>
-                </div>
-                <div>
-                  <RadioGroupItem
-                    {...register("outcome", {
-                      required: "Outcome is required",
-                      valueAsNumber: true,
-                    })}
-                    value="away"
-                    className="form-radio row-span-1"
-                    onClick={() => handleInputChange}
-                  />
-                  <span className="ml-2">Away</span>
-                </div>
-              </RadioGroup>
+          <div className="col-span-4 font-bold md:col-span-3">Winner?</div>
+
+          {/* Row 2: Home Team */}
+          <div className="col-span-2 text-right md:col-span-3">
+            <span className="hidden md:inline">
+              {formData.participants.home1.playerName} /{" "}
+              {formData.participants.home2.playerName}
+            </span>
+            <span className="md:hidden">Home</span>
+          </div>
+          {formData.scores.map((score, index) => (
+            <div key={`home-${score.round}`} className="col-span-2">
+              <Input
+                {...register(`scores.${index}.home` as const, {
+                  required: "Home team score is required",
+                  valueAsNumber: true,
+                  min: { value: 0, message: "Score must be non-negative" },
+                })}
+                type="number"
+                min="0"
+                defaultValue={0}
+                className="w-14 rounded-md border md:w-full md:px-2 md:py-2"
+                onChange={(e) =>
+                  handleScoreChange(
+                    score.round,
+                    "home",
+                    parseInt(e.target.value),
+                  )
+                }
+              />
+              {errors.scores?.[index]?.home && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.scores[index]?.home?.message}
+                </p>
+              )}
             </div>
+          ))}
+          <div className="col-span-4 md:col-span-3">
+            {" "}
+            <input
+              type="checkbox"
+              {...register("outcome", {
+                required: "Outcome is required",
+              })}
+              value="home"
+              className="form-checkbox h-5 w-5 text-green-600"
+              onChange={handleInputChange}
+            />
+            <span className="md:ml-2">Home</span>
+          </div>
+
+          {/* Row 3: Away Team */}
+          <div className="col-span-2 text-right md:col-span-3 ">
+            <span className="hidden md:inline">
+              {formData.participants.away1.playerName} /{" "}
+              {formData.participants.away2.playerName}
+            </span>
+            <span className="md:hidden">Away</span>
+          </div>
+          {formData.scores.map((score, index) => (
+            <div key={`away-${score.round}`} className="col-span-2">
+              <Input
+                {...register(`scores.${index}.away` as const, {
+                  required: "Away team score is required",
+                  valueAsNumber: true,
+                  min: { value: 0, message: "Score must be non-negative" },
+                })}
+                type="number"
+                min="0"
+                defaultValue={0}
+                className="w-14 rounded-md border md:w-full md:px-2 md:py-2"
+                onChange={(e) =>
+                  handleScoreChange(
+                    score.round,
+                    "away",
+                    parseInt(e.target.value),
+                  )
+                }
+              />
+              {errors.scores?.[index]?.away && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.scores[index]?.away?.message}
+                </p>
+              )}
+            </div>
+          ))}
+          <div className="col-span-4 md:col-span-3">
+            {" "}
+            <input
+              type="checkbox"
+              {...register("outcome", {
+                required: "Outcome is required",
+              })}
+              value="away"
+              className="form-checkbox h-5 w-5 text-green-600"
+              onChange={handleInputChange}
+            />
+            <span className="md:ml-2">Away</span>
           </div>
         </div>
       </div>
@@ -554,35 +553,33 @@ export const PickleballMatchForm: React.FC = () => {
         </h2>
         <div className="mb-4 flex flex-col justify-between gap-4 md:flex-row">
           <div>
-            <RadioGroup>
-              <label className="mb-2 block font-medium">Game Type</label>
+            <fieldset>
+              <legend className="mb-2 block font-medium">Game Type</legend>
               <div className="flex flex-col">
-                <div>
-                  <label className="flex items-center">
-                    <RadioGroupItem
-                      {...register("gameType", {
-                        required: "Game type is required",
-                      })}
-                      value="Casual"
-                      className="mr-2"
-                    />
-                    Casual
-                  </label>
-                </div>
-                <div>
-                  <label className="flex items-center">
-                    <RadioGroupItem
-                      {...register("gameType", {
-                        required: "Game type is required",
-                      })}
-                      value="Ranked"
-                      className="mr-2"
-                    />
-                    Ranked
-                  </label>
-                </div>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    {...register("gameType", {
+                      required: "Game type is required",
+                    })}
+                    value="Casual"
+                    className="form-radio mr-2 text-green-600"
+                  />
+                  Casual
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    {...register("gameType", {
+                      required: "Game type is required",
+                    })}
+                    value="Ranked"
+                    className="form-radio mr-2 text-green-600"
+                  />
+                  Ranked
+                </label>
               </div>
-            </RadioGroup>
+            </fieldset>
             {errors.gameType && (
               <p className="mt-1 text-sm text-red-500">
                 {errors.gameType.message}

@@ -12,7 +12,7 @@ export default async function HomePage() {
   const session = await getServerSession(authOptions);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-green-900 text-white">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-white text-white md:bg-green-900">
       <NavBar />
 
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
