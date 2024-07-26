@@ -10,7 +10,6 @@ import { useToast } from "~/components/ui/use-toast";
 import { LocationForm } from "../LocationForm";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
 // type FormData = z.infer<typeof MatchSchema>;
 
@@ -83,6 +82,7 @@ export const PickleballMatchForm: React.FC = () => {
     formState: { errors },
     setValue,
     reset,
+    watch,
   } = useForm<MatchInputs>({
     defaultValues: formData,
   });
@@ -298,6 +298,14 @@ export const PickleballMatchForm: React.FC = () => {
     }));
   };
 
+  const handleWinnerSelect = (winner: "home" | "away") => {
+    setValue("outcome", winner);
+    setFormData((prevData) => ({
+      ...prevData,
+      outcome: winner,
+    }));
+  };
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -436,25 +444,26 @@ export const PickleballMatchForm: React.FC = () => {
           Score Card
         </h2>
         <div className="mb-6 grid grid-cols-12 gap-1 text-xs md:gap-4 md:text-base">
-          {/* Row 1: Headers */}
-          <div className="col-span-2 text-right font-bold md:col-span-3">
-            Players
-          </div>
+          {/* ====================================
+>>>>>>>>>> Row 1: HEADERS <<<<<<<<<<<<<
+====================================   */}{" "}
+          <div className="col-span-3 text-right font-bold">Players</div>
           {formData.scores.map((score) => (
             <div key={score.round} className="col-span-2 font-bold">
               <span className="md:hidden">Rd {score.round}</span>
               <span className="hidden md:inline">Round {score.round}</span>
             </div>
           ))}
-          <div className="col-span-4 font-bold md:col-span-3">Winner?</div>
-
-          {/* Row 2: Home Team */}
-          <div className="col-span-2 text-right md:col-span-3">
+          <div className="col-span-3 font-bold">Winner?</div>
+          {/* ====================================
+          >>>>>>>>>> Row 2: HOME <<<<<<<<<<<<<
+          ====================================   */}
+          <div className="col-span-3 text-right">
             <span className="hidden md:inline">
               {formData.participants.home1.playerName} /{" "}
               {formData.participants.home2.playerName}
             </span>
-            <span className="md:hidden">Home</span>
+            <div className="pt-2 font-bold md:hidden">Home</div>
           </div>
           {formData.scores.map((score, index) => (
             <div key={`home-${score.round}`} className="col-span-2">
@@ -483,27 +492,28 @@ export const PickleballMatchForm: React.FC = () => {
               )}
             </div>
           ))}
-          <div className="col-span-4 md:col-span-3">
-            {" "}
-            <input
-              type="checkbox"
-              {...register("outcome", {
-                required: "Outcome is required",
-              })}
-              value="home"
-              className="form-checkbox h-5 w-5 text-green-600"
-              onChange={handleInputChange}
-            />
-            <span className="md:ml-2">Home</span>
+          <div id="home-winner-button" className="col-span-3">
+            <Button
+              type="button"
+              className={`w-full rounded-md px-4 py-2 text-left ${
+                watch("outcome") === "home"
+                  ? "bg-green-600 text-white"
+                  : "border border-green-600 bg-white text-green-600"
+              }`}
+              onClick={() => handleWinnerSelect("home")}
+            >
+              Home
+            </Button>
           </div>
-
-          {/* Row 3: Away Team */}
-          <div className="col-span-2 text-right md:col-span-3 ">
+          {/* ====================================
+>>>>>>>>>> Row 2: AWAY <<<<<<<<<<<<<
+====================================   */}
+          <div className="col-span-3 text-right ">
             <span className="hidden md:inline">
               {formData.participants.away1.playerName} /{" "}
               {formData.participants.away2.playerName}
             </span>
-            <span className="md:hidden">Away</span>
+            <div className="pt-2 font-bold md:hidden">Away</div>
           </div>
           {formData.scores.map((score, index) => (
             <div key={`away-${score.round}`} className="col-span-2">
@@ -532,18 +542,18 @@ export const PickleballMatchForm: React.FC = () => {
               )}
             </div>
           ))}
-          <div className="col-span-4 md:col-span-3">
-            {" "}
-            <input
-              type="checkbox"
-              {...register("outcome", {
-                required: "Outcome is required",
-              })}
-              value="away"
-              className="form-checkbox h-5 w-5 text-green-600"
-              onChange={handleInputChange}
-            />
-            <span className="md:ml-2">Away</span>
+          <div id="away-winner-button" className="col-span-3">
+            <Button
+              type="button"
+              className={`w-full rounded-md px-4 py-2 text-left ${
+                watch("outcome") === "away"
+                  ? "bg-green-600 text-white"
+                  : "border border-green-600 bg-white text-green-600"
+              }`}
+              onClick={() => handleWinnerSelect("away")}
+            >
+              Away
+            </Button>
           </div>
         </div>
       </div>
