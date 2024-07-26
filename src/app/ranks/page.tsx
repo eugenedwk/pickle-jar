@@ -6,7 +6,7 @@ import NavBar from "~/components/NavBar";
 
 interface Player {
   id: string;
-  name: string;
+  screenName: string;
   wins: number;
   losses: number;
   rank: number;
@@ -73,7 +73,7 @@ export default function RanksPage() {
                         : "text-lg"
                   }`}
                 >
-                  {player.name}
+                  {player.screenName}
                 </span>
               </div>
               <div className="flex items-center">
