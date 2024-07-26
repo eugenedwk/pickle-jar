@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Input } from "../ui/input";
+import { Command, CommandInput, CommandItem, CommandList } from "../ui/command";
 
 export type GenericFormSelectType = {
   id: string;
@@ -30,11 +30,6 @@ export const AutocompleteInput = <T extends GenericFormSelectType>({
     setDropdownVisible(false);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e);
-    setDropdownVisible(true);
-  };
-
   const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     if (!e.currentTarget.contains(e.relatedTarget)) {
       setDropdownVisible(false);
@@ -46,28 +41,36 @@ export const AutocompleteInput = <T extends GenericFormSelectType>({
   );
 
   return (
-    <div className="relative text-black" onBlur={handleBlur} tabIndex={-1}>
-      <Input
-        ref={inputRef}
-        type="text"
-        placeholder={placeholder}
-        value={value}
-        onChange={handleInputChange}
-        onFocus={() => setDropdownVisible(true)}
-      />
-      {isDropdownVisible && filteredOptions.length > 0 && (
-        <ul className="absolute z-10 m-0 w-full list-none border border-gray-300 bg-white p-0">
-          {filteredOptions.map((option) => (
-            <li
-              key={option.id}
-              onMouseDown={() => handleSelect(option)}
-              className="cursor-pointer p-2 hover:bg-gray-100"
-            >
-              {option.name}
-            </li>
-          ))}
-        </ul>
-      )}
+    <div
+      className="relative w-3/4 text-black"
+      onBlur={handleBlur}
+      tabIndex={-1}
+    >
+      <Command>
+        <CommandInput
+          ref={inputRef}
+          placeholder={placeholder}
+          value={value}
+          onValueChange={(newValue) =>
+            onChange({
+              target: { value: newValue },
+            } as React.ChangeEvent<HTMLInputElement>)
+          }
+          onFocus={() => setDropdownVisible(true)}
+        />
+        {isDropdownVisible && filteredOptions.length > 0 && (
+          <CommandList>
+            {filteredOptions.map((option) => (
+              <CommandItem
+                key={option.id}
+                onSelect={() => handleSelect(option)}
+              >
+                {option.name}
+              </CommandItem>
+            ))}
+          </CommandList>
+        )}
+      </Command>
     </div>
   );
 };
