@@ -6,7 +6,8 @@ const HeroBanner: React.FC = () => {
     "Guaranteed to improve your game...somehow",
     "Sam Youn is single.",
     "We're not really sure what we're doing",
-    "Straight facts, no chaser.",
+    "Straight, no chaser.",
+    "Remember Kendale Woods Park",
   ];
 
   const randomSlogan = slogans[Math.floor(Math.random() * slogans.length)];
