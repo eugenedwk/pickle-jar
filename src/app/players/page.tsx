@@ -75,7 +75,6 @@ export default function PlayerPage({}) {
     return <div>Error</div>;
   }
 
-  console.log(playerData);
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-green-900 text-white">
       <NavBar />
@@ -88,11 +87,11 @@ export default function PlayerPage({}) {
         <div className="mt-4">
           <h2 className="mb-2 text-2xl font-bold">Match History</h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {playerData?.matches.map((match) => (
+            {playerData?.matches?.map((match) => (
               <ScoreboardComponent
                 key={match.id}
                 match={match}
-                loggedInUser={playerData?.playerProfile?.playerData?.realName}
+                loggedInUser={playerData?.playerProfile?.playerData?.screenName}
                 onVerificationComplete={refetch}
               />
             ))}

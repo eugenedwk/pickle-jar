@@ -1,13 +1,17 @@
 "use client";
 
 import axios from "axios";
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import NavBar from "~/components/NavBar";
 import PlayerCard from "~/components/PlayerCard";
 import { ScoreboardComponent } from "~/components/ScoreCard";
 import { type MatchRes } from "~/lib/useFetchMatchList";
-import Image from "next/image";
-import { type PlayerProfile } from "~/lib/usePlayerProfileCheck";
+import {
+  type PlayerProfileRes,
+  type PlayerProfile,
+} from "~/lib/usePlayerProfileCheck";
+import { LoadingPickle } from "~/components/LoadingPickle";
+import { useQuery } from "@tanstack/react-query";
 
 type PlayerPageType = {
   playerProfile: PlayerProfile;
@@ -20,81 +24,82 @@ export default function PlayerPage({
   params: { playerId: string };
 }) {
   const { playerId } = params;
-  const [matches, setMatches] = useState<MatchRes[]>([]);
-  const [playerProfile, setPlayerProfile] = useState<PlayerProfile>();
-  const [playerStats, setPlayerStats] = useState<{
-    wins: number;
-    losses: number;
-  }>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [playerScreenName, setPlayerScreenName] = useState<string>("");
 
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const [profileResponse, statsResponse] = await Promise.all([
-        axios.get<PlayerPageType>(`/api/players/${playerId}`),
-        axios.get<{ wins: number; losses: number }>(
-          `/api/players/${playerId}/stats`,
-        ),
-      ]);
+  const {
+    data: playerData,
+    error: playerError,
+    isLoading: playerLoading,
+    refetch: refetchPlayerData,
+  } = useQuery({
+    queryKey: ["playerData", playerId],
+    queryFn: async () => {
+      const response = await axios.get<PlayerPageType>(
+        `/api/players/${playerId}`,
+      );
+      const playerScreeName =
+        response.data?.playerProfile?.playerData?.screenName;
+      setPlayerScreenName(playerScreeName!);
+      return response.data;
+    },
+  });
 
-      setPlayerProfile(profileResponse.data.playerProfile);
-      setMatches(profileResponse.data.matches);
-      setPlayerStats(statsResponse.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setError("Failed to load player data. Please try again later.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [playerId]);
+  const {
+    data: playerStats,
+    error: statsError,
+    isLoading: statsLoading,
+  } = useQuery({
+    queryKey: ["playerStats", playerId],
+    queryFn: async () => {
+      const response = await axios.get<{ wins: number; losses: number }>(
+        `/api/players/${playerId}/stats`,
+      );
+      return response.data;
+    },
+  });
 
-  useEffect(() => {
-    void fetchData();
-  }, [fetchData]);
-
-  const handleVerificationComplete = () => {
-    void fetchData(); // Refetch all data
-  };
+  const isLoading = playerLoading || statsLoading;
+  const error = playerError || statsError;
 
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="animate-spin">
-          <Image src="/pickle.svg" alt="Loading" width={100} height={100} />
-        </div>
-      </div>
-    );
-  }
-  if (error) {
-    return <div>Error: {error}</div>;
+    return <LoadingPickle />;
   }
 
-  if (!playerProfile) {
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!playerData?.playerProfile ?? !playerData.matches) {
     return <div>Player not found</div>;
   }
+
+  const handleVerificationComplete = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    void refetchPlayerData();
+  };
+
+  const playerMatches = playerData.matches;
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-green-900 text-white">
       <NavBar />
       <div className="mx-4 md:mx-16">
         <PlayerCard
-          {...playerProfile}
+          {...playerData.playerProfile}
           wins={playerStats?.wins}
           losses={playerStats?.losses}
         />
         <div className="mt-4">
           <h2 className="mb-2 text-2xl font-bold">Match History</h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {matches.map((match) => (
+            {playerMatches.map((match) => (
               <ScoreboardComponent
                 key={match.id}
                 match={match}
-                loggedInUser={playerProfile?.playerData?.realName}
+                loggedInUser={playerScreenName}
                 onVerificationComplete={handleVerificationComplete}
               />
-            ))}
+            )) ?? null}
           </div>
         </div>
       </div>

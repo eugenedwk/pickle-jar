@@ -1,76 +1,91 @@
-import React, { useState, useRef } from "react";
-import { Command, CommandInput, CommandItem, CommandList } from "../ui/command";
+import React, { useState } from "react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Button } from "../ui/button";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "~/lib/utils";
+
+interface AutocompleteCommandProps {
+  options: GenericFormSelectType[];
+  onSelect: (value: GenericFormSelectType) => void;
+  placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
 
 export type GenericFormSelectType = {
   id: string;
-  name: string;
+  name?: string;
+  screenName?: string;
   team?: string;
 };
 
-type AutocompleteInputProps<T extends GenericFormSelectType> = {
-  options: T[];
-  onSelect: (value: T) => void;
-  placeholder?: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-};
-
-export const AutocompleteInput = <T extends GenericFormSelectType>({
-  options,
+export const AutocompleteCommand: React.FC<AutocompleteCommandProps> = ({
+  options = [],
   onSelect,
   placeholder,
-  value,
+  value = "",
   onChange,
-}: AutocompleteInputProps<T>) => {
-  const [isDropdownVisible, setDropdownVisible] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+}) => {
+  const [open, setOpen] = useState(false);
 
-  const handleSelect = (option: T) => {
-    onSelect(option);
-    setDropdownVisible(false);
-  };
-
-  const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-    if (!e.currentTarget.contains(e.relatedTarget)) {
-      setDropdownVisible(false);
+  const handleSelect = (currentValue: string) => {
+    const selectedOption = options.find(
+      (option) => option.name === currentValue,
+    );
+    if (selectedOption) {
+      onSelect(selectedOption);
+      onChange({
+        target: { value: currentValue, name: "playerName" },
+      } as React.ChangeEvent<HTMLInputElement>);
+      setOpen(false);
     }
   };
 
-  const filteredOptions = options.filter((option) =>
-    option.name.toLowerCase().includes(value?.toLowerCase() || ""),
-  );
-
   return (
-    <div
-      className="relative w-3/4 text-black"
-      onBlur={handleBlur}
-      tabIndex={-1}
-    >
-      <Command>
-        <CommandInput
-          ref={inputRef}
-          placeholder={placeholder}
-          value={value}
-          onValueChange={(newValue) =>
-            onChange({
-              target: { value: newValue },
-            } as React.ChangeEvent<HTMLInputElement>)
-          }
-          onFocus={() => setDropdownVisible(true)}
-        />
-        {isDropdownVisible && filteredOptions.length > 0 && (
-          <CommandList>
-            {filteredOptions.map((option) => (
-              <CommandItem
-                key={option.id}
-                onSelect={() => handleSelect(option)}
-              >
-                {option.name}
-              </CommandItem>
-            ))}
-          </CommandList>
-        )}
-      </Command>
-    </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-[200px] justify-between"
+        >
+          {value || placeholder}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0">
+        <Command>
+          <CommandInput placeholder={placeholder} />
+          <CommandEmpty>No option found.</CommandEmpty>
+          <CommandGroup>
+            <CommandList>
+              {options.map((option) => (
+                <CommandItem
+                  key={option.id}
+                  onSelect={() => handleSelect(option.name ?? "")}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === option.name ? "opacity-100" : "opacity-0",
+                    )}
+                  />
+                  {option.name}
+                </CommandItem>
+              ))}
+            </CommandList>
+          </CommandGroup>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 };

@@ -9,7 +9,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import {
-  AutocompleteInput,
+  AutocompleteCommand,
   type GenericFormSelectType,
 } from "~/components/AutoComplete";
 import { Switch } from "~/components/ui/switch";
@@ -136,14 +136,13 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
     setValue("homeCourt", { id: "", name: value });
   };
 
-  const handleLocationSelect = (selectedLocation: {
-    id: string;
-    name: string;
-  }) => {
-    setLocationInput(selectedLocation.name);
-    setValue("homeCourt", selectedLocation);
+  const handleLocationSelect = (selectedLocation: GenericFormSelectType) => {
+    setLocationInput(selectedLocation.name ?? "");
+    setValue("homeCourt", {
+      id: selectedLocation.id,
+      name: selectedLocation.name ?? "",
+    });
   };
-
   const onSubmitHandler: SubmitHandler<PlayerFormData> = (data) => {
     onSubmit(data);
   };
@@ -324,7 +323,7 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
         >
           Home Court
         </Label>
-        <AutocompleteInput
+        <AutocompleteCommand
           options={locations}
           onSelect={handleLocationSelect}
           placeholder="Enter your home court"
@@ -346,12 +345,13 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
               <h3 className="mb-4 text-lg font-semibold">Add New Location</h3>
               <LocationForm
                 onSubmit={async (newLocation: GenericFormSelectType) => {
-                  // Add the new location to the locations list
-                  setLocations([...locations, newLocation]);
-                  // Select the new location
-                  setLocationInput(newLocation.name);
-                  setValue("homeCourt", newLocation);
-                  // Close the popover
+                  const location = {
+                    id: newLocation.id,
+                    name: newLocation.name ?? "",
+                  };
+                  setLocations([...locations, location]);
+                  setLocationInput(location.name);
+                  setValue("homeCourt", location);
                   setIsLocationFormOpen(false);
                 }}
                 onCancel={() => setIsLocationFormOpen(false)}

@@ -1,9 +1,10 @@
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { format } from "date-fns";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import {
-  AutocompleteInput,
+  AutocompleteCommand,
   type GenericFormSelectType,
 } from "~/components/AutoComplete";
 import { useToast } from "~/components/ui/use-toast";
@@ -44,10 +45,8 @@ export type MatchInputs = {
 export const PickleballMatchForm: React.FC = () => {
   const { toast } = useToast();
   const [createdMatch, setCreatedMatch] = useState<MatchInputs | null>(null);
-  const [locations, setLocations] = useState<{ id: string; name: string }[]>(
-    [],
-  );
   const [isLocationFormOpen, setIsLocationFormOpen] = useState(false);
+  const [locationInput, setLocationInput] = useState("");
 
   const [formData, setFormData] = useState<MatchInputs>({
     participants: {
@@ -68,14 +67,6 @@ export const PickleballMatchForm: React.FC = () => {
     ],
   });
 
-  const [locationInput, setLocationInput] = useState("");
-  const [playerOptions, setPlayerOptions] = useState<
-    {
-      id: string;
-      name: string;
-    }[]
-  >([]);
-
   const {
     register,
     handleSubmit,
@@ -87,89 +78,64 @@ export const PickleballMatchForm: React.FC = () => {
     defaultValues: formData,
   });
 
-  useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const response = await axios.get("/api/locations");
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        setLocations(response.data);
-      } catch (error) {
-        console.error("Error fetching locations:", error);
-      }
-    };
+  const { data: locations = [], refetch: refetchLocations } = useQuery({
+    queryKey: ["locations"],
+    queryFn: async () => {
+      const response = await axios.get("/api/locations");
+      return response.data;
+    },
+  });
 
-    const fetchPlayers = async () => {
+  const { data: playerOptions = [] } = useQuery({
+    queryKey: ["players option"],
+    queryFn: async () => {
       try {
-        const response = await fetch("/api/players");
-        if (response.ok) {
-          const players = (await response.json()) as {
-            id: string;
-            name: string;
-          }[];
-          setPlayerOptions(
-            players.map((player) => ({
-              id: player.id,
-              name: player.name,
-            })),
-          );
-        }
+        const response =
+          await axios.get<GenericFormSelectType[]>("/api/players");
+        const players = response.data;
+        return players ?? []; // Ensure we always return an array
       } catch (error) {
-        console.error("Error fetching players:", error);
+        console.error("Failed to fetch players:", error);
+        return []; // Return empty array on error
       }
-    };
-
-    void fetchLocations();
-    void fetchPlayers();
-  }, []);
+    },
+  });
 
   const handlePlayerSelect =
     (field: keyof MatchInputs) => (value: GenericFormSelectType) => {
-      if (!value) {
-        console.error("Selected value is undefined");
-        return;
-      }
+      if (!value) return;
+
       const { id, name, team } = value;
-      const playerIdField = `${field}.playerId` as keyof MatchInputs;
-      const playerNameField = `${field}.playerName` as keyof MatchInputs;
-      const playerTeamField = `${field}.team` as keyof MatchInputs;
-
-      console.log("Setting values:", {
-        playerIdField,
-        playerNameField,
-        playerTeamField,
+      setValue(`${field}.playerId` as keyof MatchInputs, id, {
+        shouldValidate: true,
       });
-
-      if (id && name) {
-        setValue(`${field}.playerId` as keyof MatchInputs, id, {
+      setValue(`${field}.playerScreenName` as keyof MatchInputs, name ?? "", {
+        shouldValidate: true,
+      });
+      if (team) {
+        setValue(`${field}.team` as keyof MatchInputs, team, {
           shouldValidate: true,
-        });
-        setValue(`${field}.playerName` as keyof MatchInputs, name, {
-          shouldValidate: true,
-        });
-        if (team) {
-          setValue(`${field}.team` as keyof MatchInputs, team, {
-            shouldValidate: true,
-          });
-        }
-        setFormData((prevData) => {
-          const updatedData = { ...prevData };
-          const fields = field.split(".");
-          let current: unknown = updatedData;
-
-          for (let i = 0; i < fields.length - 1; i++) {
-            current = current![fields[i] as keyof typeof current];
-          }
-
-          (current as Record<string, unknown>)[fields[fields.length - 1]!] = {
-            playerId: id,
-            playerName: name,
-            team: team,
-          };
-
-          // console.log("Updated formData:", updatedData);
-          return updatedData;
         });
       }
+
+      setFormData((prevData) => {
+        const updatedData = { ...prevData };
+        const fields = field.split(".");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let current: any = updatedData;
+
+        for (let i = 0; i < fields.length - 1; i++) {
+          current = current[fields[i] as keyof typeof current];
+        }
+
+        (current as Record<string, unknown>)[fields[fields.length - 1]!] = {
+          playerId: id,
+          playerName: name ?? "",
+          team: team ?? "",
+        };
+
+        return updatedData;
+      });
     };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -189,12 +155,12 @@ export const PickleballMatchForm: React.FC = () => {
     setValue("location", { id: "", name: value });
   };
 
-  const handleLocationSelect = (selectedLocation: {
-    id: string;
-    name: string;
-  }) => {
-    setLocationInput(selectedLocation.name);
-    setValue("location", selectedLocation);
+  const handleLocationSelect = (selectedLocation: GenericFormSelectType) => {
+    setLocationInput(selectedLocation.name ?? "");
+    setValue("location", {
+      id: selectedLocation.id,
+      name: selectedLocation.name ?? "",
+    });
   };
 
   // Helper function to set nested value
@@ -328,22 +294,14 @@ export const PickleballMatchForm: React.FC = () => {
             <label htmlFor="playerName" className="mb-2 block font-medium">
               Home #1
             </label>
-            <AutocompleteInput
+            <AutocompleteCommand
               options={playerOptions}
               onSelect={handlePlayerSelect(
                 "participants.home1" as keyof MatchInputs,
               )}
               placeholder="Enter Your Name"
               value={formData.participants.home1.playerName}
-              onChange={(e) =>
-                handleInputChange({
-                  ...e,
-                  target: {
-                    ...e.target,
-                    name: "participants.home1.playerName",
-                  },
-                })
-              }
+              onChange={handleInputChange}
             />
             {errors.participants?.home1?.playerName && (
               <p className="mt-1 text-sm text-red-500">
@@ -355,22 +313,14 @@ export const PickleballMatchForm: React.FC = () => {
             <label htmlFor="home2name" className="mb-2 block font-medium">
               Home #2
             </label>
-            <AutocompleteInput
+            <AutocompleteCommand
               options={playerOptions}
               onSelect={handlePlayerSelect(
                 "participants.home2" as keyof MatchInputs,
               )}
               placeholder="Enter partner's name"
               value={formData.participants.home2.playerName}
-              onChange={(e) =>
-                handleInputChange({
-                  ...e,
-                  target: {
-                    ...e.target,
-                    name: "participants.home2.playerName",
-                  },
-                })
-              }
+              onChange={handleInputChange}
             />
             {errors.participants?.home2?.playerName && (
               <p className="mt-1 text-sm text-red-500">
@@ -384,22 +334,14 @@ export const PickleballMatchForm: React.FC = () => {
             <label htmlFor="away1Name" className="mb-2 block font-medium">
               Away #1
             </label>
-            <AutocompleteInput
+            <AutocompleteCommand
               options={playerOptions}
               onSelect={handlePlayerSelect(
                 "participants.away1" as keyof MatchInputs,
               )}
               placeholder="Enter Aways name"
               value={formData.participants.away1.playerName}
-              onChange={(e) =>
-                handleInputChange({
-                  ...e,
-                  target: {
-                    ...e.target,
-                    name: "participants.away1.playerName",
-                  },
-                })
-              }
+              onChange={handleInputChange}
             />
             {errors.participants?.away1?.playerName && (
               <p className="mt-1 text-sm text-red-500">
@@ -413,22 +355,14 @@ export const PickleballMatchForm: React.FC = () => {
               <label htmlFor="away2Name" className="mb-2 block font-medium">
                 Away #2
               </label>
-              <AutocompleteInput
+              <AutocompleteCommand
                 options={playerOptions}
                 onSelect={handlePlayerSelect(
                   "participants.away2" as keyof MatchInputs,
                 )}
                 placeholder="Enter Away name"
                 value={formData.participants.away2.playerName}
-                onChange={(e) =>
-                  handleInputChange({
-                    ...e,
-                    target: {
-                      ...e.target,
-                      name: "participants.away2.playerName",
-                    },
-                  })
-                }
+                onChange={handleInputChange}
               />
               {errors.participants?.away2?.playerName && (
                 <p className="mt-1 text-sm text-red-500">
@@ -600,7 +534,7 @@ export const PickleballMatchForm: React.FC = () => {
             <label htmlFor="location" className="mb-2 block font-medium">
               Location
             </label>
-            <AutocompleteInput
+            <AutocompleteCommand
               options={locations}
               onSelect={handleLocationSelect}
               placeholder="Enter location"
@@ -630,10 +564,11 @@ export const PickleballMatchForm: React.FC = () => {
                   <LocationForm
                     onSubmit={async (newLocation: GenericFormSelectType) => {
                       // Add the new location to the locations list
-                      setLocations([...locations, newLocation]);
-                      // Select the new location
-                      setValue("location", newLocation);
-                      // Close the popover
+                      await refetchLocations();
+                      setValue("location", {
+                        id: newLocation.id,
+                        name: newLocation.name ?? "",
+                      });
                       setIsLocationFormOpen(false);
                     }}
                     onCancel={() => setIsLocationFormOpen(false)}
@@ -663,21 +598,6 @@ export const PickleballMatchForm: React.FC = () => {
               <p className="mt-1 text-sm text-red-500">{errors.date.message}</p>
             )}
           </div>
-          {/* <div>
-            <label htmlFor="time" className="mb-2 block font-medium">
-            Time
-            </label>
-            <input
-              {...register("time", { required: "Time is required" })}
-              id="time"
-              type="time"
-              className="w-full rounded-md border px-3 py-2"
-              onChange={handleInputChange}
-            />
-            {errors.time && (
-              <p className="mt-1 text-sm text-red-500">{errors.time.message}</p>
-            )}
-          </div> */}
         </div>
         <div className="mb-4 flex flex-col gap-4"></div>
         {errors.outcome && (
