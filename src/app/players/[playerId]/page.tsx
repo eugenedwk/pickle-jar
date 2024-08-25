@@ -59,7 +59,7 @@ export default function PlayerPage({
   });
 
   const isLoading = playerLoading || statsLoading;
-  const error = playerError || statsError;
+  const error = playerError ?? statsError;
 
   if (isLoading) {
     return <LoadingPickle />;
