@@ -14,7 +14,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@auth/drizzle-adapter": "^1.4.1",
+    "@auth/drizzle-adapter": "1.4.1",
     "@heroicons/react": "^2.1.4",
     "@hookform/resolvers": "^3.6.0",
     "@radix-ui/react-dialog": "^1.1.1",
