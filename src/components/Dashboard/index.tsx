@@ -46,7 +46,7 @@ const Dashboard: React.FC = () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return <p>Error checking player profile: {error.message}</p>;
   }
-
+  console.log(playerProfileData);
   const showOnboarding = !playerProfileData?.hasProfile;
   const realNamePLZ = playerProfileData?.playerData?.realName ?? "";
 
@@ -64,28 +64,32 @@ const Dashboard: React.FC = () => {
           <OnboardingForm onComplete={handleOnboardingComplete} />
         </DialogContent>
       </Dialog>
-      <div className="w-full md:my-8">
-        {!showOnboarding && <PlayerCard {...playerProfileData.playerData} />}
-        <div className="w-full bg-white"></div>
-      </div>
-      <div className="my-8 flex w-full flex-col md:flex-row">
-        <div className="mb-8 w-full md:m-8">
-          <PickleballMatchForm />
-        </div>
-        <div className="mb-4 w-full md:m-8 md:w-1/2">
-          <h2 className="text-left text-4xl font-bold text-white">
-            Recent Matches{" "}
-          </h2>
-          {matchList?.map((match: MatchRes, index: number) => (
-            <ScoreboardComponent
-              key={index}
-              match={match}
-              loggedInUser={realNamePLZ}
-              onVerificationComplete={() => refetch()}
-            />
-          ))}
-        </div>
-      </div>
+      {!showOnboarding && (
+        <>
+          <div className="w-full md:my-8">
+            <PlayerCard {...playerProfileData.playerData} />
+            <div className="w-full bg-white"></div>
+          </div>
+          <div className="my-8 flex w-full flex-col md:flex-row">
+            <div className="mb-8 w-full md:m-8">
+              <PickleballMatchForm />
+            </div>
+            <div className="mb-4 w-full md:m-8 md:w-1/2">
+              <h2 className="text-left text-4xl font-bold text-white">
+                Recent Matches{" "}
+              </h2>
+              {matchList?.map((match: MatchRes, index: number) => (
+                <ScoreboardComponent
+                  key={index}
+                  match={match}
+                  loggedInUser={realNamePLZ}
+                  onVerificationComplete={() => refetch()}
+                />
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
