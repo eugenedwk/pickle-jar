@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "~/server/db";
-import { players } from "~/server/db/schema";
+import { players, users } from "~/server/db/schema";
 import { getServerAuthSession } from "~/server/auth";
+import { eq } from "drizzle-orm";
 
 const LocationSchema = z.object({
   id: z.string(),
@@ -42,6 +43,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const userId = session.user.id;
+
+    // Check if the user exists in the database
+    const userExists = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    if (userExists.length === 0) {
+      return NextResponse.json(
+        { error: "User not found in the database" },
+        { status: 404 },
+      );
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const body = await request.json();
     const validatedData = PlayerSchema.parse(body);

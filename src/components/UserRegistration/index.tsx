@@ -204,161 +204,178 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
         </Label>
       </div>
 
-      <div>
-        <Label
-          htmlFor="skillLevel"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Skill Level
-        </Label>
-        <Select onValueChange={(value) => setValue("skillLevel", value)}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select skill level" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Beginner">Beginner</SelectItem>
-            <SelectItem value="Intermediate">Intermediate</SelectItem>
-            <SelectItem value="Advanced">Advanced</SelectItem>
-            <SelectItem value="Try Hard">Try Hard</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="py-4">
+        <hr className="border-t border-gray-300" />
       </div>
 
-      <div>
-        <Label
-          htmlFor="paddleBrand"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Paddle Brand
-        </Label>
-        <Input
-          {...register("paddleBrand")}
-          id="paddleBrand"
-          className="mt-1 block w-full rounded-md border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        />
-      </div>
-
-      <div>
-        <span className="text-sm font-medium text-gray-700">
-          Paddle Preference
-        </span>
-        <div className="flex whitespace-nowrap">
-          <Label className="flex items-center">
-            <Input
-              type="radio"
-              {...register("paddlePreference")}
-              value="Control"
-              className="form-radio text-indigo-600"
-            />
-            <span className="ml-2 text-black">Control</span>
+      <div className="flex space-x-4">
+        <div className="flex-1">
+          <Label
+            htmlFor="skillLevel"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Skill Level
           </Label>
-        </div>
-        <div className="flex whitespace-nowrap">
-          <Label className="flex items-center">
-            <Input
-              type="radio"
-              {...register("paddlePreference")}
-              value="Power"
-              className="form-radio text-indigo-600"
-            />
-            <span className="ml-2 text-black">Power</span>
-          </Label>
-        </div>
-      </div>
-
-      <div>
-        <span className="text-sm font-medium text-gray-700">Plays</span>
-        <div className="flex whitespace-nowrap">
-          <Label className="flex items-center">
-            <Input
-              type="radio"
-              {...register("plays")}
-              value="Left-Handed"
-              className="form-radio text-indigo-600"
-            />
-            <span className="ml-2 text-black">Left Handed</span>
-          </Label>
-        </div>
-        <div className="flex whitespace-nowrap">
-          <Label className="flex items-center">
-            <Input
-              type="radio"
-              {...register("plays")}
-              value="Right-Handed"
-              className="form-radio text-indigo-600"
-            />
-            <span className="ml-2 text-black">Right Handed</span>
-          </Label>
-        </div>
-      </div>
-      <div>
-        <Label
-          htmlFor="state"
-          className="block text-sm font-medium text-gray-700"
-        >
-          State
-        </Label>
-        <div
-          id="state"
-          className="mt-1 block w-full rounded-md border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        >
-          <Select onValueChange={(value) => setValue("state", value)}>
+          <Select onValueChange={(value) => setValue("skillLevel", value)}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a state" />
+              <SelectValue placeholder="Select skill level" />
             </SelectTrigger>
             <SelectContent>
-              {stateList.map((state) => (
-                <SelectItem key={state.value} value={state.value}>
-                  {state.label}
-                </SelectItem>
-              ))}
+              <SelectItem value="Beginner">Beginner</SelectItem>
+              <SelectItem value="Intermediate">Intermediate</SelectItem>
+              <SelectItem value="Advanced">Advanced</SelectItem>
+              <SelectItem value="Try Hard">Try Hard</SelectItem>
             </SelectContent>
           </Select>
         </div>
-      </div>
-      <div>
-        <Label
-          htmlFor="homeCourt"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Home Court
-        </Label>
-        <AutocompleteCommand
-          options={locations}
-          onSelect={handleLocationSelect}
-          placeholder="Enter your home court"
-          value={locationInput}
-          onChange={handleLocationChange}
-        />
-        <div className="mt-2 text-xs">
-          <button
-            type="button"
-            className="text-blue-600 hover:underline focus:outline-none"
-            onClick={() => setIsLocationFormOpen(true)}
+
+        <div className="flex-1">
+          <Label
+            htmlFor="paddleBrand"
+            className="block text-sm font-medium text-gray-700"
           >
-            Don&apos;t see your location? Add a new one
-          </button>
+            Paddle Brand
+          </Label>
+          <Input
+            {...register("paddleBrand")}
+            id="paddleBrand"
+            className="mt-1 block w-full rounded-md border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
         </div>
-        {isLocationFormOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-              <h3 className="mb-4 text-lg font-semibold">Add New Location</h3>
-              <LocationForm
-                onSubmit={async (newLocation: GenericFormSelectType) => {
-                  const location = {
-                    id: newLocation.id,
-                    name: newLocation.name ?? "",
-                  };
-                  setLocations([...locations, location]);
-                  setLocationInput(location.name);
-                  setValue("homeCourt", location);
-                  setIsLocationFormOpen(false);
-                }}
-                onCancel={() => setIsLocationFormOpen(false)}
+      </div>
+
+      <div className="flex">
+        <div className="flex-1">
+          <span className="text-sm font-medium text-gray-700">
+            Paddle Preference
+          </span>
+          <div className="flex whitespace-nowrap">
+            <Label className="flex items-center">
+              <Input
+                type="radio"
+                {...register("paddlePreference")}
+                value="Control"
+                className="form-radio"
               />
-            </div>
+              <span className="ml-2 text-black">Control</span>
+            </Label>
           </div>
-        )}
+          <div className="flex whitespace-nowrap">
+            <Label className="flex items-center">
+              <Input
+                type="radio"
+                {...register("paddlePreference")}
+                value="Power"
+                className="form-radio"
+              />
+              <span className="ml-2 text-black">Power</span>
+            </Label>
+          </div>
+        </div>
+
+        <div className="mx-4 w-px bg-gray-300"></div>
+
+        <div className="flex-1">
+          <span className="text-sm font-medium text-gray-700">Plays</span>
+          <div className="flex whitespace-nowrap">
+            <Label className="flex items-center">
+              <Input
+                type="radio"
+                {...register("plays")}
+                value="Left-Handed"
+                className="form-radio "
+              />
+              <span className="ml-2 text-black">Left Handed</span>
+            </Label>
+          </div>
+          <div className="flex whitespace-nowrap">
+            <Label className="flex items-center">
+              <Input
+                type="radio"
+                {...register("plays")}
+                value="Right-Handed"
+                className="form-radio"
+              />
+              <span className="ml-2 text-black">Right Handed</span>
+            </Label>
+          </div>
+        </div>
+      </div>
+
+      <div className="py-4">
+        <hr className="border-t border-gray-300" />
+      </div>
+
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <Label
+            htmlFor="state"
+            className="block text-sm font-medium text-gray-700"
+          >
+            State
+          </Label>
+          <div
+            id="state"
+            className="mt-1 block w-full rounded-md border-gray-300 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          >
+            <Select onValueChange={(value) => setValue("state", value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select your state" />
+              </SelectTrigger>
+              <SelectContent>
+                {stateList.map((state) => (
+                  <SelectItem key={state.value} value={state.value}>
+                    {state.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="flex-1">
+          <Label
+            htmlFor="homeCourt"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Home Court
+          </Label>
+          <AutocompleteCommand
+            options={locations}
+            onSelect={handleLocationSelect}
+            placeholder="Enter your home court"
+            value={locationInput}
+            onChange={handleLocationChange}
+          />
+          <div className="mt-2 text-xs">
+            <button
+              type="button"
+              className="text-left text-blue-600 hover:underline focus:outline-none "
+              onClick={() => setIsLocationFormOpen(true)}
+            >
+              + Add new court
+            </button>
+          </div>
+          {isLocationFormOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+                <h3 className="mb-4 text-lg font-semibold">Add New Location</h3>
+                <LocationForm
+                  onSubmit={async (newLocation: GenericFormSelectType) => {
+                    const location = {
+                      id: newLocation.id,
+                      name: newLocation.name ?? "",
+                    };
+                    setLocations([...locations, location]);
+                    setLocationInput(location.name);
+                    setValue("homeCourt", location);
+                    setIsLocationFormOpen(false);
+                  }}
+                  onCancel={() => setIsLocationFormOpen(false)}
+                />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <Button

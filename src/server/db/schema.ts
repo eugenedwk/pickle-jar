@@ -22,14 +22,19 @@ import { INITIAL_RATING } from "~/lib/eloCalculator";
  */
 export const createTable = pgTableCreator((name) => `picklejar_${name}`);
 
-export const users = pgTable("user", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  name: text("name"),
-  email: text("email").notNull(),
-  emailVerified: timestamp("emailVerified", { mode: "date" }),
-  image: text("image"),
+export const users = createTable("user", {
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: varchar("name", { length: 255 }),
+  email: varchar("email", { length: 255 }).notNull(),
+  emailVerified: timestamp("emailVerified", {
+    mode: "date",
+    withTimezone: true,
+  }).default(sql`CURRENT_TIMESTAMP`),
+  image: varchar("image", { length: 255 }),
 });
-
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
 }));

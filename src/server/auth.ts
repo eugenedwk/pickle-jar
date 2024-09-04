@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 
 import {
@@ -33,7 +30,7 @@ declare module "next-auth" {
       id: string;
       // ...other properties
       // role: UserRole;
-    } & Omit<DefaultSession["user"], "id">;
+    } & DefaultSession["user"];
   }
   interface User {
     id: string;
@@ -67,10 +64,10 @@ export const authOptions: NextAuthOptions = {
   },
 
   adapter: DrizzleAdapter(db, {
-    users,
-    accounts,
-    sessions,
-    verificationTokens,
+    usersTable: users,
+    accountsTable: accounts,
+    sessionsTable: sessions,
+    verificationTokensTable: verificationTokens,
   }) as Adapter,
   providers: [
     Auth0Provider({
