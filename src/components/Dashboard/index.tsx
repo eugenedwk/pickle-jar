@@ -78,14 +78,19 @@ const Dashboard: React.FC = () => {
               <h2 className="text-left text-4xl font-bold text-white">
                 Recent Matches{" "}
               </h2>
-              {matchList?.map((match: MatchRes, index: number) => (
-                <ScoreboardComponent
-                  key={index}
-                  match={match}
-                  loggedInUser={realNamePLZ}
-                  onVerificationComplete={() => refetch()}
-                />
-              ))}
+              {matchList
+                ?.sort(
+                  (a, b) =>
+                    new Date(b.date).getTime() - new Date(a.date).getTime(),
+                )
+                .map((match: MatchRes, index: number) => (
+                  <ScoreboardComponent
+                    key={match.id || index}
+                    match={match}
+                    loggedInUser={realNamePLZ}
+                    onVerificationComplete={() => refetch()}
+                  />
+                ))}
             </div>
           </div>
         </>

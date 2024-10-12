@@ -3,6 +3,7 @@ import { useState } from "react";
 import { VerifyMatchPrompt } from "~/components/VerifyMatchPrompt";
 import { type MatchRes } from "~/lib/useFetchMatchList";
 import Link from "next/link";
+import { format, parseISO } from "date-fns";
 
 /**
  * v0 by Vercel.
@@ -65,6 +66,10 @@ export const ScoreboardComponent = ({
     name: awayTeam[1]?.playerName ?? "Opponent 2",
     playerId: awayTeam[1]?.playerId ?? "",
   };
+
+  // Update the date rendering
+  const formattedDate = format(parseISO(date.toString()), "MMMM d, yyyy");
+
   return (
     <div className="my-8 w-full rounded-md border bg-white shadow-md">
       <div className="flex justify-between border-b bg-gray-100 p-4">
@@ -93,11 +98,7 @@ export const ScoreboardComponent = ({
             {location.name}
           </span>
           <span className="text-right text-sm text-gray-600">
-            {new Date(date).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
+            {formattedDate}
           </span>
         </div>
       </div>

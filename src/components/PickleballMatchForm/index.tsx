@@ -17,6 +17,7 @@ import { Input } from "../ui/input";
 export type ParticipantType = {
   playerId: string;
   playerName: string;
+  playerScreenName: string;
   team: string;
 };
 
@@ -29,7 +30,7 @@ export type MatchInputs = {
     name: string;
   };
   outcome: string;
-  scores: {
+  scores?: {
     round: number;
     home: number;
     away: number;
@@ -50,10 +51,10 @@ export const PickleballMatchForm: React.FC = () => {
 
   const [formData, setFormData] = useState<MatchInputs>({
     participants: {
-      home1: { playerId: "", playerName: "", team: "" },
-      home2: { playerId: "", playerName: "", team: "" },
-      away1: { playerId: "", playerName: "", team: "" },
-      away2: { playerId: "", playerName: "", team: "" },
+      home1: { playerId: "", playerName: "", playerScreenName: "", team: "" },
+      home2: { playerId: "", playerName: "", playerScreenName: "", team: "" },
+      away1: { playerId: "", playerName: "", playerScreenName: "", team: "" },
+      away2: { playerId: "", playerName: "", playerScreenName: "", team: "" },
     },
     gameType: "",
     date: new Date(),
@@ -82,6 +83,7 @@ export const PickleballMatchForm: React.FC = () => {
     queryKey: ["locations"],
     queryFn: async () => {
       const response = await axios.get("/api/locations");
+      console.log("location", response);
       return response.data;
     },
   });
@@ -150,12 +152,14 @@ export const PickleballMatchForm: React.FC = () => {
   };
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("handleLocationChange", e.target);
     const value = e.target.value;
     setLocationInput(value);
     setValue("location", { id: "", name: value });
   };
 
   const handleLocationSelect = (selectedLocation: GenericFormSelectType) => {
+    console.log("handleLocationSelect", selectedLocation);
     setLocationInput(selectedLocation.name ?? "");
     setValue("location", {
       id: selectedLocation.id,
@@ -185,27 +189,28 @@ export const PickleballMatchForm: React.FC = () => {
   };
 
   const onSubmit: SubmitHandler<MatchInputs> = async (data) => {
+    console.log("data", data);
     // Step 1: Submit match match data
     try {
       const participants = [
         {
           playerId: data.participants.home1.playerId,
-          playerName: data.participants.home1.playerName,
+          playerName: data.participants.home1.playerScreenName,
           team: "home",
         },
         {
           playerId: data.participants.home2.playerId,
-          playerName: data.participants.home2.playerName,
+          playerName: data.participants.home2.playerScreenName,
           team: "home",
         },
         {
           playerId: data.participants.away1.playerId,
-          playerName: data.participants.away1.playerName,
+          playerName: data.participants.away1.playerScreenName,
           team: "away",
         },
         {
           playerId: data.participants.away2.playerId,
-          playerName: data.participants.away2.playerName,
+          playerName: data.participants.away2.playerScreenName,
           team: "away",
         },
       ];
@@ -258,9 +263,10 @@ export const PickleballMatchForm: React.FC = () => {
   ) => {
     setFormData((prevData) => ({
       ...prevData,
-      scores: prevData.scores.map((score) =>
-        score.round === round ? { ...score, [team]: value } : score,
-      ),
+      scores:
+        prevData.scores?.map((score) =>
+          score.round === round ? { ...score, [team]: value } : score,
+        ) ?? [],
     }));
   };
 
@@ -279,7 +285,7 @@ export const PickleballMatchForm: React.FC = () => {
     >
       <div className="mb-2 md:col-span-2">
         <h2 className="text-left text-4xl font-bold text-green-800">
-          Pickleball Match Entry Form
+          Match Entry Form
         </h2>
         <h3 className="text-md text-left ">
           Only one entry required per match.
@@ -382,7 +388,7 @@ export const PickleballMatchForm: React.FC = () => {
 >>>>>>>>>> Row 1: HEADERS <<<<<<<<<<<<<
 ====================================   */}{" "}
           <div className="col-span-3 text-right font-bold">Players</div>
-          {formData.scores.map((score) => (
+          {formData.scores?.map((score) => (
             <div key={score.round} className="col-span-2 font-bold">
               <span className="md:hidden">Rd {score.round}</span>
               <span className="hidden md:inline">Round {score.round}</span>
@@ -399,11 +405,10 @@ export const PickleballMatchForm: React.FC = () => {
             </span>
             <div className="pt-2 font-bold md:hidden">Home</div>
           </div>
-          {formData.scores.map((score, index) => (
+          {formData.scores?.map((score, index) => (
             <div key={`home-${score.round}`} className="col-span-2">
               <Input
                 {...register(`scores.${index}.home` as const, {
-                  required: "Home team score is required",
                   valueAsNumber: true,
                   min: { value: 0, message: "Score must be non-negative" },
                 })}
@@ -449,11 +454,10 @@ export const PickleballMatchForm: React.FC = () => {
             </span>
             <div className="pt-2 font-bold md:hidden">Away</div>
           </div>
-          {formData.scores.map((score, index) => (
+          {formData.scores?.map((score, index) => (
             <div key={`away-${score.round}`} className="col-span-2">
               <Input
                 {...register(`scores.${index}.away` as const, {
-                  required: "Away team score is required",
                   valueAsNumber: true,
                   min: { value: 0, message: "Score must be non-negative" },
                 })}

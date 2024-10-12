@@ -37,13 +37,14 @@ export const AutocompleteCommand: React.FC<AutocompleteCommandProps> = ({
   const [open, setOpen] = useState(false);
 
   const handleSelect = (currentValue: string) => {
+    console.log("currentValue", currentValue, options);
     const selectedOption = options.find(
       (option) => option.name === currentValue,
     );
     if (selectedOption) {
       onSelect(selectedOption);
       onChange({
-        target: { value: currentValue, name: "playerName" },
+        target: { value: currentValue, name: selectedOption.id },
       } as React.ChangeEvent<HTMLInputElement>);
       setOpen(false);
     }
