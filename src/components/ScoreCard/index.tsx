@@ -106,8 +106,16 @@ export const ScoreboardComponent = ({
         <div className="flex justify-between">
           <div>
             <div className="font-medium text-gray-900">
-              <Link href={`/players/${player.playerId}`}>{player.name}</Link> /{" "}
-              <Link href={`/players/${partner.playerId}`}>{partner.name}</Link>
+              <Link href={`/players/${player.playerId}`}>{player.name}</Link>
+              {partner.name !== "Player 2" && (
+                <>
+                  {" "}
+                  /{" "}
+                  <Link href={`/players/${partner.playerId}`}>
+                    {partner.name}
+                  </Link>
+                </>
+              )}
               {outcome === "home" && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -140,11 +148,16 @@ export const ScoreboardComponent = ({
             <div className="font-medium text-gray-900">
               <Link href={`/players/${opponent1.playerId}`}>
                 {opponent1.name}
-              </Link>{" "}
-              /{" "}
-              <Link href={`/players/${opponent2.playerId}`}>
-                {opponent2.name}
               </Link>
+              {opponent2.name !== "Opponent 2" && (
+                <>
+                  {" "}
+                  /{" "}
+                  <Link href={`/players/${opponent2.playerId}`}>
+                    {opponent2.name}
+                  </Link>
+                </>
+              )}
               {outcome === "away" && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
