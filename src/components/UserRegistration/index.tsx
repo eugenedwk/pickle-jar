@@ -150,7 +150,7 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmitHandler)}
-      className="max-h-[65vh] space-y-2 overflow-y-auto rounded-lg bg-white p-6 shadow-md"
+      className="relative max-h-[65vh] space-y-2 overflow-y-auto rounded-lg bg-white p-6 pb-16 shadow-md"
     >
       <div>
         <Label
@@ -378,13 +378,17 @@ export const PlayerProfileForm: React.FC<PlayerProfileFormProps> = ({
         </div>
       </div>
 
-      <Button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full rounded-md border border-transparent bg-green-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-      >
-        {isSubmitting ? "Submitting..." : "Submit"}
-      </Button>
+      <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
+        <div className="mx-auto max-w-md">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full rounded-md border border-transparent bg-green-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          >
+            {isSubmitting ? "Submitting..." : "Submit"}
+          </Button>
+        </div>
+      </div>
     </form>
   );
 };
