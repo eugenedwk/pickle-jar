@@ -18,6 +18,7 @@ const Dashboard: React.FC = () => {
 
   const { data: session, status } = useSession();
   const sessionId = session?.user.id;
+  console.log("sessionId", sessionId);
   const {
     data: playerProfileData,
     isLoading,
@@ -49,6 +50,7 @@ const Dashboard: React.FC = () => {
   console.log(playerProfileData);
   const showOnboarding = !playerProfileData?.hasProfile;
   const realNamePLZ = playerProfileData?.playerData?.realName ?? "";
+  const playerId = playerProfileData?.playerData?.id;
 
   if (showOnboarding && !showOnboardingDialog) {
     setShowOnboardingDialog(true);
@@ -87,7 +89,7 @@ const Dashboard: React.FC = () => {
                   <ScoreboardComponent
                     key={match.id || index}
                     match={match}
-                    loggedInUser={realNamePLZ}
+                    loggedInUser={playerId}
                     onVerificationComplete={() => refetch()}
                   />
                 ))}

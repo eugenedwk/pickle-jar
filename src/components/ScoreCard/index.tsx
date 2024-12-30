@@ -22,7 +22,7 @@ interface ScoreboardProps {
  */
 export const ScoreboardComponent = ({
   match,
-  loggedInUser,
+  loggedInUser: loggedInUserId,
   onVerificationComplete,
 }: ScoreboardProps) => {
   const [isVerifying, setIsVerifying] = useState(false);
@@ -30,7 +30,13 @@ export const ScoreboardComponent = ({
   /**
    * Initiates the match verification process.
    */
+  // console.log("logged in user:", loggedInUser);
   const handleVerifyClick = () => {
+    console.log("Match details:", {
+      homeTeam: [player.name, partner.name],
+      awayTeam: [opponent1.name, opponent2.name],
+      verified: match.verified,
+    });
     setIsVerifying(true);
   };
 
@@ -38,6 +44,7 @@ export const ScoreboardComponent = ({
    * Completes the verification process and triggers a callback.
    */
   const handleVerificationComplete = () => {
+    console.log("Verification completed");
     setIsVerifying(false);
     onVerificationComplete();
   };
@@ -70,6 +77,22 @@ export const ScoreboardComponent = ({
   // Update the date rendering
   const formattedDate = format(parseISO(date.toString()), "MMMM d, yyyy");
 
+  // Add logging for initial render
+  console.log("ScoreCard render:", {
+    loggedInUser: loggedInUserId,
+    canVerify:
+      opponent1.playerId === loggedInUserId ||
+      opponent2.playerId === loggedInUserId,
+    isVerified: match.verified,
+    participants: match.participants,
+  });
+
+  // Update the verification check
+  const canVerify =
+    !verified &&
+    (opponent1.playerId === loggedInUserId ||
+      opponent2.playerId === loggedInUserId);
+
   return (
     <div className="my-8 w-full rounded-md border bg-white shadow-md">
       <div className="flex justify-between border-b bg-gray-100 p-4">
@@ -79,8 +102,7 @@ export const ScoreboardComponent = ({
             <span className="mt-1 rounded-full bg-green-500 px-2 py-1 text-xs text-white">
               Verified
             </span>
-          ) : opponent1.name === loggedInUser ||
-            opponent2.name === loggedInUser ? (
+          ) : canVerify ? (
             <Button
               onClick={handleVerifyClick}
               className="mt-1 rounded-md bg-blue-500 text-xs text-white hover:bg-blue-600"
