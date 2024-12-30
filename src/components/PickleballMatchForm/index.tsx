@@ -79,11 +79,14 @@ export const PickleballMatchForm: React.FC = () => {
     defaultValues: formData,
   });
 
-  const { data: locations = [], refetch: refetchLocations } = useQuery({
+  const { data: locations = [], refetch: refetchLocations } = useQuery<
+    GenericFormSelectType[]
+  >({
     queryKey: ["locations"],
     queryFn: async () => {
-      const response = await axios.get("/api/locations");
-      console.log("location", response);
+      const response =
+        await axios.get<GenericFormSelectType[]>("/api/locations");
+      console.log("Fetched locations:", response.data);
       return response.data;
     },
   });
@@ -152,14 +155,22 @@ export const PickleballMatchForm: React.FC = () => {
   };
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("handleLocationChange", e.target);
     const value = e.target.value;
+    console.log("handleLocationChange:", { value });
     setLocationInput(value);
-    setValue("location", { id: "", name: value });
+
+    // Find matching location to preserve ID if it exists
+    const matchingLocation = locations.find(
+      (loc: GenericFormSelectType) => loc.name === value,
+    );
+    setValue("location", {
+      id: matchingLocation?.id ?? "",
+      name: value,
+    });
   };
 
   const handleLocationSelect = (selectedLocation: GenericFormSelectType) => {
-    console.log("handleLocationSelect", selectedLocation);
+    console.log("handleLocationSelect:", selectedLocation);
     setLocationInput(selectedLocation.name ?? "");
     setValue("location", {
       id: selectedLocation.id,
@@ -189,6 +200,7 @@ export const PickleballMatchForm: React.FC = () => {
   };
 
   const onSubmit: SubmitHandler<MatchInputs> = async (data) => {
+    console.log("Form submission - location data:", data.location.id);
     console.log("data", data);
     // Step 1: Submit match match data
     try {
@@ -595,7 +607,8 @@ export const PickleballMatchForm: React.FC = () => {
               id="date"
               type="date"
               className="w-full rounded-md border px-3 py-2"
-              defaultValue={format(new Date(), "yyyy-MM-dd")}
+              defaultValue={new Date().toISOString().split("T")[0]}
+              value={new Date().toISOString().split("T")[0]}
               onChange={handleInputChange}
             />
             {errors.date && (
