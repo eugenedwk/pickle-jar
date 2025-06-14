@@ -78,13 +78,14 @@ const Dashboard: React.FC = () => {
             </div>
             <div className="mb-4 w-full md:m-8 md:w-1/2">
               <h2 className="text-left text-4xl font-bold text-white">
-                Recent Matches{" "}
+                Recent Matches
               </h2>
               {matchList
                 ?.sort(
                   (a, b) =>
                     new Date(b.date).getTime() - new Date(a.date).getTime(),
                 )
+                .slice(0, 4)
                 .map((match: MatchRes, index: number) => (
                   <ScoreboardComponent
                     key={match.id || index}

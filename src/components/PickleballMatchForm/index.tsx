@@ -200,6 +200,28 @@ export const PickleballMatchForm: React.FC = () => {
   };
 
   const onSubmit: SubmitHandler<MatchInputs> = async (data) => {
+    // Validate required fields before submission
+    if (
+      !data.participants.home1.playerId ||
+      !data.participants.away1.playerId
+    ) {
+      toast({
+        title: "Missing Required Players",
+        description: "Please select both Home #1 and Away #1 players.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!data.scores?.some((score) => score.home > 0 || score.away > 0)) {
+      toast({
+        title: "Missing Scores",
+        description: "Please enter scores for at least one round.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     console.log("Form submission - location data:", data.location.id);
     console.log("data", data);
     // Step 1: Submit match match data
@@ -288,6 +310,17 @@ export const PickleballMatchForm: React.FC = () => {
       ...prevData,
       outcome: winner,
     }));
+  };
+
+  // Add this helper function near the top of the component
+  const isRoundAvailable = (
+    roundIndex: number,
+    scores: MatchInputs["scores"] = [],
+  ) => {
+    if (roundIndex === 0) return true; // First round is always available
+
+    const previousRound = scores[roundIndex - 1];
+    return previousRound && (previousRound.home > 0 || previousRound.away > 0);
   };
 
   return (
@@ -419,23 +452,31 @@ export const PickleballMatchForm: React.FC = () => {
           </div>
           {formData.scores?.map((score, index) => (
             <div key={`home-${score.round}`} className="col-span-2">
-              <Input
-                {...register(`scores.${index}.home` as const, {
-                  valueAsNumber: true,
-                  min: { value: 0, message: "Score must be non-negative" },
-                })}
-                type="number"
-                min="0"
-                defaultValue={0}
-                className="w-14 rounded-md border md:w-full md:px-2 md:py-2"
-                onChange={(e) =>
-                  handleScoreChange(
-                    score.round,
-                    "home",
-                    parseInt(e.target.value),
-                  )
-                }
-              />
+              {isRoundAvailable(index, formData.scores) ? (
+                <Input
+                  {...register(`scores.${index}.home` as const, {
+                    valueAsNumber: true,
+                    min: { value: 0, message: "Score must be non-negative" },
+                    max: { value: 100, message: "Score cannot exceed 100" },
+                  })}
+                  type="number"
+                  min="0"
+                  max="100"
+                  defaultValue={0}
+                  className="w-14 rounded-md border md:w-full md:px-2 md:py-2"
+                  onChange={(e) =>
+                    handleScoreChange(
+                      score.round,
+                      "home",
+                      parseInt(e.target.value),
+                    )
+                  }
+                />
+              ) : (
+                <div className="w-14 rounded-md border bg-gray-100 md:w-full md:px-2 md:py-2">
+                  -
+                </div>
+              )}
               {errors.scores?.[index]?.home && (
                 <p className="mt-1 text-sm text-red-500">
                   {errors.scores[index]?.home?.message}
@@ -468,23 +509,31 @@ export const PickleballMatchForm: React.FC = () => {
           </div>
           {formData.scores?.map((score, index) => (
             <div key={`away-${score.round}`} className="col-span-2">
-              <Input
-                {...register(`scores.${index}.away` as const, {
-                  valueAsNumber: true,
-                  min: { value: 0, message: "Score must be non-negative" },
-                })}
-                type="number"
-                min="0"
-                defaultValue={0}
-                className="w-14 rounded-md border md:w-full md:px-2 md:py-2"
-                onChange={(e) =>
-                  handleScoreChange(
-                    score.round,
-                    "away",
-                    parseInt(e.target.value),
-                  )
-                }
-              />
+              {isRoundAvailable(index, formData.scores) ? (
+                <Input
+                  {...register(`scores.${index}.away` as const, {
+                    valueAsNumber: true,
+                    min: { value: 0, message: "Score must be non-negative" },
+                    max: { value: 100, message: "Score cannot exceed 100" },
+                  })}
+                  type="number"
+                  min="0"
+                  max="100"
+                  defaultValue={0}
+                  className="w-14 rounded-md border md:w-full md:px-2 md:py-2"
+                  onChange={(e) =>
+                    handleScoreChange(
+                      score.round,
+                      "away",
+                      parseInt(e.target.value),
+                    )
+                  }
+                />
+              ) : (
+                <div className="w-14 rounded-md border bg-gray-100 md:w-full md:px-2 md:py-2">
+                  -
+                </div>
+              )}
               {errors.scores?.[index]?.away && (
                 <p className="mt-1 text-sm text-red-500">
                   {errors.scores[index]?.away?.message}
