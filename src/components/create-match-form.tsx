@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,7 +8,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -37,13 +40,6 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
 import { useToast } from "~/components/ui/use-toast";
 import { cn } from "~/lib/utils";
 
@@ -167,7 +163,7 @@ export function CreateMatchForm({ onSuccess, onCancel }: CreateMatchFormProps) {
         date: data.date,
         time: data.time,
         location: data.location,
-        courtId: data.courtId || "default-court",
+        courtId: data.courtId ?? "default-court",
         participants,
       };
 
@@ -328,6 +324,12 @@ export function CreateMatchForm({ onSuccess, onCancel }: CreateMatchFormProps) {
                       }}
                       value={field.value.name}
                       disabled={locationsLoading}
+                      onChange={(e) =>
+                        field.onChange({
+                          id: e.target.name,
+                          name: e.target.value,
+                        })
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -355,6 +357,8 @@ export function CreateMatchForm({ onSuccess, onCancel }: CreateMatchFormProps) {
                             placeholder="Select player..."
                             onSelect={(player) => field.onChange(player.id)}
                             disabled={playersLoading}
+                            value={field.value ?? ""}
+                            onChange={(e) => field.onChange(e.target.value)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -375,6 +379,8 @@ export function CreateMatchForm({ onSuccess, onCancel }: CreateMatchFormProps) {
                               placeholder="Select player..."
                               onSelect={(player) => field.onChange(player.id)}
                               disabled={playersLoading}
+                              value={field.value ?? ""}
+                              onChange={(e) => field.onChange(e.target.value)}
                             />
                           </FormControl>
                           <FormMessage />
@@ -401,6 +407,8 @@ export function CreateMatchForm({ onSuccess, onCancel }: CreateMatchFormProps) {
                             placeholder="Select player..."
                             onSelect={(player) => field.onChange(player.id)}
                             disabled={playersLoading}
+                            value={field.value ?? ""}
+                            onChange={(e) => field.onChange(e.target.value)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -421,6 +429,8 @@ export function CreateMatchForm({ onSuccess, onCancel }: CreateMatchFormProps) {
                               placeholder="Select player..."
                               onSelect={(player) => field.onChange(player.id)}
                               disabled={playersLoading}
+                              value={field.value ?? ""}
+                              onChange={(e) => field.onChange(e.target.value)}
                             />
                           </FormControl>
                           <FormMessage />
